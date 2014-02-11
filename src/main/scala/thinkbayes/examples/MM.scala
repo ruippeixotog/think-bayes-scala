@@ -41,5 +41,5 @@ object MMApp extends App {
 
   suite.update("bag1", "yellow")
   suite.update("bag2", "green")
-  suite.print()
+  suite.printChart()
 }

@@ -16,10 +16,10 @@ object MontyApp extends App {
   val suite = new Monty("ABC", 'A') // doors A, B and C, first choice is A
 
   println("Before any door is opened:")
-  suite.print() // print the probability of each hypothesis
+  suite.printChart() // print the probability of each hypothesis
 
   println()
   println("After Monty opens door B:")
   suite.update('B') // Monty opens B
-  suite.print() // print the probability of each hypothesis
+  suite.printChart() // print the probability of each hypothesis
 }
