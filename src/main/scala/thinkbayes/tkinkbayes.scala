@@ -14,6 +14,9 @@ class Pmf[K] {
     hist = hist.mapValues(_ / sum)
   }
 
+  def mean(implicit num: Numeric[K]): Double =
+    hist.map { case (h, prob) => num.toDouble(h) * prob }.sum
+
   private[this] def pad(str: String, n: Int): String =
     if(str.length > n) str.substring(0, n) else str + (" " * (n - str.length))
 
