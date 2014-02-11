@@ -19,7 +19,7 @@ object Plotting {
     }
 
     def plotXY(xLabel: String = "", seriesName: String = "")(implicit ord: Ordering[K], asNum: K => Number): XYChart = {
-      val chart = XYLineChart(pmf.hist.toSeq.toXYSeriesCollection())
+      val chart = XYLineChart(pmf.hist.toSeq.toXYSeriesCollection(seriesName))
       chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
       chart.labelGenerator = None
