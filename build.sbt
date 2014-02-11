@@ -1,0 +1,1 @@
+initialCommands in console := "import thinkbayes._; import thinkbayes.examples._"
