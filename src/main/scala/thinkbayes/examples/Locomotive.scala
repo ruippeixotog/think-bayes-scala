@@ -2,6 +2,7 @@ package thinkbayes.examples
 
 import thinkbayes.Suite
 import thinkbayes.extensions.Plotting._
+import thinkbayes.extensions.Stats._
 
 class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
   hypos.foreach { hypo => set(hypo, math.pow(hypo, -alpha)) }
@@ -34,4 +35,8 @@ object LocomotiveApp extends App {
   println("Mean of the distribution after #60 is seen:")
   println("Uniform prior: " + suite.mean)
   println("Power law prior: " + suite2.mean)
+
+  println("90% credible interval after #60 is seen:")
+  println("Uniform prior: " + suite.credibleInterval(0.9))
+  println("Power law prior: " + suite2.credibleInterval(0.9))
 }
