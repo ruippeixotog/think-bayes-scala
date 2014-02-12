@@ -39,4 +39,14 @@ object LocomotiveApp extends App {
   println("90% credible interval after #60 is seen:")
   println("Uniform prior: " + suite.credibleInterval(0.9))
   println("Power law prior: " + suite2.credibleInterval(0.9))
+
+  println("Mean of the distribution after #30 and #90 are seen after #60:")
+  List(60, 90).foreach(suite.update)
+  List(60, 90).foreach(suite2.update)
+  println("Uniform prior: " + suite.mean)
+  println("Power law prior: " + suite2.mean)
+
+  println("90% credible interval after #30 and #90 are seen after #60:")
+  println("Uniform prior: " + suite.credibleInterval(0.9))
+  println("Power law prior: " + suite2.credibleInterval(0.9))
 }

@@ -12,7 +12,7 @@ object Plotting {
   implicit class PlottablePmf[K](val pmf: Pmf[K]) extends AnyVal {
 
     def plotBar()(implicit ord: K => Ordered[K]): CategoryChart = {
-      val chart = BarChart(pmf.hist.toSeq.toCategoryDataset)
+      val chart = BarChart(pmf.hist.toSeq.sorted.toCategoryDataset)
       chart.rangeAxisLabel = "probability"
       chart.show(dim = (800, 600))
       chart
