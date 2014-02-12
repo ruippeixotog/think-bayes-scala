@@ -19,23 +19,19 @@ class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
  */
 object LocomotiveApp extends App {
   val suite = new Locomotive(1 to 1000)
-
-  println("Priors (plot)...")
-  suite.plotXY("Number of trains", "Prior (uniform)")
-
-  println("After a train with number 60 is seen (plot)...")
-  suite.update(60)
-  suite.plotXY("Number of trains", "After train #60 (uniform prior)")
-
-  println("Mean of the distribution after #60 is seen: " + suite.mean)
-
-  println("Priors using a power law prior (plot)...")
   val suite2 = new Locomotive(1 to 1000, 1.0)
-  suite2.plotXY("Number of trains", "Prior (power law)")
 
-  println("After a train with number 60 is seen (plot)...")
+  println("Plotting priors...")
+  val priorPlot = suite.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
+  suite2.plotXYOn(priorPlot)("Power law")
+
+  println("Plotting posteriors after a train with number 60 is seen...")
   suite.update(60)
-  suite.plotXY("Number of trains", "After train #60 (power law prior)")
+  suite2.update(60)
+  val postPlot = suite.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
+  suite2.plotXYOn(postPlot)("Power law")
 
-  println("Mean of the distribution after #60 is seen: " + suite2.mean)
+  println("Mean of the distribution after #60 is seen:")
+  println("Uniform prior: " + suite.mean)
+  println("Power law prior: " + suite2.mean)
 }

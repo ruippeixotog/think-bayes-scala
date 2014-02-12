@@ -1,10 +1,10 @@
 package thinkbayes.extensions
 
 import org.jfree.chart.StandardChartTheme
+import org.jfree.data.xy.XYSeriesCollection
 import scalax.chart._
 import scalax.chart.Charting._
 import thinkbayes._
-import scalax.chart.ChartFactories.BarChart
 
 object Plotting {
   implicit val chartTheme = StandardChartTheme.createLegacyTheme()
@@ -14,16 +14,23 @@ object Plotting {
     def plotBar()(implicit ord: K => Ordered[K]): CategoryChart = {
       val chart = BarChart(pmf.hist.toSeq.toCategoryDataset)
       chart.rangeAxisLabel = "probability"
-      chart.show
+      chart.show(dim = (800, 600))
       chart
     }
 
-    def plotXY(xLabel: String = "", seriesName: String = "")(implicit ord: Ordering[K], asNum: K => Number): XYChart = {
-      val chart = XYLineChart(pmf.hist.toSeq.toXYSeriesCollection(seriesName))
+    def plotXY(seriesName: String = "", title: String = "", xLabel: String = "")(implicit ord: Ordering[K], asNum: K => Number): XYChart = {
+      val chart = XYLineChart(pmf.hist.toSeq.toXYSeriesCollection(seriesName), title = title)
       chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
-      chart.labelGenerator = None
-      chart.show
+      chart.show(dim = (800, 600))
+      chart
+    }
+
+    def plotXYOn(chart: XYChart)(seriesName: String = "")(implicit ord: Ordering[K], asNum: K => Number): chart.type = {
+      chart.plot.getDataset match {
+        case seriesList: XYSeriesCollection =>
+          seriesList.addSeries(pmf.hist.toSeq.toXYSeries(seriesName))
+      }
       chart
     }
   }
