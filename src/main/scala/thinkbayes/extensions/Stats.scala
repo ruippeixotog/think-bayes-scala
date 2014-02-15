@@ -1,6 +1,6 @@
 package thinkbayes.extensions
 
-import thinkbayes.Pmf
+import thinkbayes._
 
 object Stats {
 
@@ -8,14 +8,22 @@ object Stats {
 
     def percentile(p: Double)(implicit ord: Ordering[K]): K = {
       def loop(remHist: Seq[(K, Double)], total: Double): K = remHist match {
-        case (h, prob) +: rem if total + prob > p => h
-        case (h, prob) +: rem => loop(rem, total + prob)
-        case Nil => pmf.normalize(); pmf.percentile(p)
+        case (key, prob) +: Nil => key
+        case (key, prob) +: rem if total + prob > p => key
+        case (key, prob) +: rem => loop(rem, total + prob)
       }
       loop(pmf.hist.toSeq.sorted, 0.0)
     }
 
-    def credibleInterval(p: Double)(implicit ord: Ordering[K]): (K, K) = {
+    def credibleInterval(p: Double)(implicit ord: Ordering[K]): (K, K) =
+      pmf.toCdf.credibleInterval(p)
+  }
+
+  implicit class CdfStats[K](val cdf: Cdf[K]) extends AnyVal {
+
+    def percentile(prob: Double) = cdf.value(prob)
+
+    def credibleInterval(p: Double): (K, K) = {
       val distTail = (1.0 - p) / 2.0
       (percentile(distTail), percentile(1.0 - distTail))
     }

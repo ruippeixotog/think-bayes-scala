@@ -17,6 +17,8 @@ class Pmf[K] {
   def mean(implicit num: Numeric[K]): Double =
     hist.map { case (h, prob) => num.toDouble(h) * prob }.sum
 
+  def toCdf(implicit ord: Ordering[K]): Cdf[K] = Cdf(hist.toSeq)
+
   private[this] def pad(str: String, n: Int): String =
     if(str.length > n) str.substring(0, n) else str + (" " * (n - str.length))
 
@@ -39,14 +41,5 @@ class Pmf[K] {
             ("#" * (50 * prob).toInt)
       }.foreach(println)
     }
-  }
-}
-
-abstract class Suite[H, D] extends Pmf[H] {
-  def likelihood(data: D, hypo: H): Double
-
-  def update(data: D) = {
-    hist = hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
-    normalize()
   }
 }
