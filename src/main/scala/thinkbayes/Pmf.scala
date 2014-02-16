@@ -9,6 +9,8 @@ class Pmf[K] {
   def incr(key: K) = hist += (key -> (hist.getOrElse(key, 0.0) + 1))
   def mult(key: K, factor: Double) = hist += (key -> (hist.getOrElse(key, 0.0) * factor))
 
+  def max: K = hist.maxBy(_._2)._1
+
   def normalize() {
     val sum = hist.values.sum
     hist = hist.mapValues(_ / sum)

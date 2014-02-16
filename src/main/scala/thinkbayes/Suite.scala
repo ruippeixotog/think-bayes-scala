@@ -7,4 +7,11 @@ abstract class Suite[H, D] extends Pmf[H] {
     hist = hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
     normalize()
   }
+
+  def updateSet(dataset: TraversableOnce[D]) = {
+    dataset.foreach { data =>
+      hist = hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
+    }
+    normalize()
+  }
 }
