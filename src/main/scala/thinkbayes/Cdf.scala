@@ -1,7 +1,7 @@
 package thinkbayes
 
 class Cdf[K: Ordering] {
-  private var vals = IndexedSeq.empty[(K, Double)]
+  var vals = IndexedSeq.empty[(K, Double)]
 
   def prob(key: K): Double = searchBy[(K, Double), K](vals, key, _._1) match {
     case Left((_, p)) => p

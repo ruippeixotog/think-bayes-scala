@@ -24,13 +24,13 @@ object LocomotiveApp extends App {
 
   println("Plotting priors...")
   val priorPlot = suite.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
-  suite2.plotXYOn(priorPlot)("Power law")
+  suite2.plotXYOn(priorPlot, "Power law")
 
   println("Plotting posteriors after a train with number 60 is seen...")
   suite.update(60)
   suite2.update(60)
   val postPlot = suite.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
-  suite2.plotXYOn(postPlot)("Power law")
+  suite2.plotXYOn(postPlot, "Power law")
 
   println("Mean of the distribution after #60 is seen:")
   println("Uniform prior: " + suite.mean)
