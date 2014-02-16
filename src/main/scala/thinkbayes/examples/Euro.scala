@@ -1,6 +1,6 @@
 package thinkbayes.examples
 
-import thinkbayes.Suite
+import thinkbayes.{Beta, Suite}
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 import Euro._
@@ -64,4 +64,9 @@ object EuroApp extends App {
   println("Mean of the distribution: " + suite2.mean)
   println("Median of the distribution: " + suite2.percentile(0.5))
   println("90%% credible interval: " + suite2.credibleInterval(0.9))
+
+  println("Plotting posterior using a beta distribution...")
+  val beta = new Beta()
+  beta.updateSet(140, 110)
+  beta.toPmf(0.0 to 1.0 by 0.0001).plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
 }
