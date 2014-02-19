@@ -14,6 +14,21 @@ class Cdf[K: Ordering] {
     case Right(nextIdx) => vals(nextIdx)._1
   }
 
+  def pow(p: Double)(implicit num: Numeric[K]): Cdf[K] = {
+    val cdf = new Cdf[K]
+    cdf.vals = vals.map { case (k, prob) => (k, math.pow(prob, p)) }
+    cdf
+  }
+
+  def toPmf: Pmf[K] = {
+    val pmf = new Pmf[K]
+    vals.foldLeft(0.0) { case (last, (k, prob)) =>
+      pmf.set(k, prob - last)
+      prob
+    }
+    pmf
+  }
+
   private[this] def searchBy[A, V <% Ordered[V]](xs: IndexedSeq[A], target: V, f: A => V): Either[A, Int] = {
     def bs(target: V, start: Int, end: Int): Either[A, Int] = {
       if (start == end) {

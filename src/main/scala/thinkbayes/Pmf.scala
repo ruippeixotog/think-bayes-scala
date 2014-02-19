@@ -1,5 +1,7 @@
 package thinkbayes
 
+import scala.util.Random
+
 class Pmf[K] {
   var hist = Map[K, Double]()
 
@@ -11,7 +13,7 @@ class Pmf[K] {
   def prob(key: K) = hist.getOrElse(key, 0.0)
 
   def set(key: K, prob: Double) = hist += (key -> prob)
-  def incr(key: K) = hist += (key -> (hist.getOrElse(key, 0.0) + 1))
+  def incr(key: K, prob: Double = 1.0) = hist += (key -> (hist.getOrElse(key, 0.0) + prob))
   def mult(key: K, factor: Double) = hist += (key -> (hist.getOrElse(key, 0.0) * factor))
 
   /**
@@ -19,6 +21,26 @@ class Pmf[K] {
    * @return the value with the highest probability.
    */
   def max: K = hist.maxBy(_._2)._1
+
+  def random(): K = {
+    def get(rand: Double, it: Iterator[(K, Double)]): K = {
+      val (k, prob) = it.next()
+      if(rand < prob) k else get(rand - prob, it)
+    }
+    get(Random.nextDouble() * hist.values.sum, hist.iterator)
+  }
+
+  def join[J](other: Pmf[K], comb: (K, K) => J)(implicit num: Numeric[K]): Pmf[J] = {
+    val pmf = new Pmf[J]
+    for {
+      (k, prob) <- hist
+      (k2, prob2) <- other.hist
+    } pmf.incr(comb(k, k2), prob * prob2)
+    pmf
+  }
+
+  def +(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.plus)
+  def -(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.minus)
 
   /**
    * Normalizes this PMF so the sum of all probabilities is 1.0.
@@ -59,5 +81,26 @@ class Pmf[K] {
             ("#" * (50 * prob).toInt)
       }.foreach(println)
     }
+  }
+}
+
+object Pmf {
+
+  def apply[K](probs: Map[K, Double]) = {
+    val pmf = new Pmf[K]
+    pmf.hist = probs
+    pmf
+  }
+
+  def apply[K](probs: (K, Double)*) = {
+    val pmf = new Pmf[K]
+    probs.foreach { case (k, prob) => pmf.incr(k, prob) }
+    pmf
+  }
+
+  def apply[K](probs: TraversableOnce[K]) = {
+    val pmf = new Pmf[K]
+    probs.foreach(pmf.incr(_))
+    pmf
   }
 }

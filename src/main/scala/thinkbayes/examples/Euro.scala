@@ -1,12 +1,13 @@
 package thinkbayes.examples
 
-import thinkbayes.{Beta, Suite}
+import thinkbayes.Suite
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
+import thinkbayes.utils.Beta
 import Euro._
 
 class Euro(unit: Double = 1.0) extends Suite[Double, CoinSide] {
-  (0.0 to 100.0 by unit).foreach(incr)
+  (0.0 to 100.0 by unit).foreach(incr(_))
   normalize()
 
   def setTrianglePrior() {

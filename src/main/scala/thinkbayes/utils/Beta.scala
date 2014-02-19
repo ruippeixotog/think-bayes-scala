@@ -1,6 +1,7 @@
-package thinkbayes
+package thinkbayes.utils
 
 import scala.math._
+import thinkbayes.Pdf
 
 class Beta(var alpha: Double = 1.0, var beta: Double = 1.0) extends Pdf {
   override def density(x: Double) = pow(x, alpha - 1) * pow(1 - x, beta - 1)
