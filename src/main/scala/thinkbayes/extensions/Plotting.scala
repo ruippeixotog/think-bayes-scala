@@ -12,8 +12,9 @@ object Plotting {
   trait Plottable[K] {
     def values: Seq[(K, Double)]
 
-    def plotBar()(implicit ord: K => Ordered[K]): CategoryChart = {
-      val chart = BarChart(values.sorted.toCategoryDataset)
+    def plotBar(title: String = "", xLabel: String = "")(implicit ord: K => Ordered[K]): CategoryChart = {
+      val chart = BarChart(values.sorted.toCategoryDataset, title = title)
+      chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
       chart.show(dim = (800, 600))
       chart

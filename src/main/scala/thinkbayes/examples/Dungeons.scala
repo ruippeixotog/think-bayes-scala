@@ -21,6 +21,8 @@ class Die(sides: Int) extends Pmf[Int] {
  * So you might be curious to know the distribution of this sum."
  */
 object DungeonsApp extends App {
+
+  // sum and maxima
   val three = Seq.fill(3)(new Die(6))
 
   val threeSum = sampleSum(three, 1000)
@@ -39,4 +41,10 @@ object DungeonsApp extends App {
 
   val chartMax = threeMax.plotXY("Sample", title = "Max of three d6", xLabel = "Max")
   threeMaxExp.plotXYOn(chartMax, "Exponential")
+
+  // mixture
+  val five = Pmf(List(4, 6, 8, 12, 20).map(new Die(_)))
+  val mix = five.mixture
+
+  mix.plotBar(title = "Outcome of random die from a box", xLabel = "Outcome")
 }

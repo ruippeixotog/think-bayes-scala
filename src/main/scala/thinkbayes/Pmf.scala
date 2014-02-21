@@ -59,6 +59,16 @@ class Pmf[K] {
 
   def toCdf(implicit ord: Ordering[K]): Cdf[K] = Cdf(hist.toSeq)
 
+  def mixture[K2](implicit ev: K <:< Pmf[K2]): Pmf[K2] = {
+    val pmf = new Pmf[K2]
+    hist.foreach { case (outcome, weight) =>
+      outcome.hist.foreach { case (k, prob) =>
+        pmf.incr(k, weight * prob)
+      }
+    }
+    pmf
+  }
+
   private[this] def pad(str: String, n: Int): String =
     if(str.length > n) str.substring(0, n) else str + (" " * (n - str.length))
 
