@@ -2,14 +2,6 @@ package thinkbayes.examples
 
 import thinkbayes.Suite
 
-class Dice(hypos: Seq[Int]) extends Suite[Int, Int] {
-  hypos.foreach(set(_, 1))
-  normalize()
-
-  def likelihood(data: Int, hypo: Int) =
-    if(hypo < data) 0 else 1.0 / hypo
-}
-
 /**
  * Application for solving the dice problem (page 19):
  *
@@ -21,6 +13,17 @@ class Dice(hypos: Seq[Int]) extends Suite[Int, Int] {
  * that I rolled each die?"
  */
 object DiceApp extends App {
+
+  class Dice(hypos: Seq[Int]) extends Suite[Int, Int] {
+    hypos.foreach(set(_, 1))
+    normalize()
+
+    def likelihood(data: Int, hypo: Int) =
+      if(hypo < data) 0 else 1.0 / hypo
+  }
+
+  // ---------
+
   val suite = new Dice(List(4, 6, 8, 12, 20))
 
   println("Priors:")

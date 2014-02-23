@@ -4,11 +4,6 @@ import thinkbayes.Pmf
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Sampling._
 
-class Die(sides: Int) extends Pmf[Int] {
-  (1 to sides).foreach(set(_, 1))
-  normalize()
-}
-
 /**
  * Application for solving the Dungeons and Dragons d6 problem (page 42):
  *
@@ -21,6 +16,13 @@ class Die(sides: Int) extends Pmf[Int] {
  * So you might be curious to know the distribution of this sum."
  */
 object DungeonsApp extends App {
+
+  class Die(sides: Int) extends Pmf[Int] {
+    (1 to sides).foreach(set(_, 1))
+    normalize()
+  }
+
+  // ---------
 
   // sum and maxima
   val three = Seq.fill(3)(new Die(6))

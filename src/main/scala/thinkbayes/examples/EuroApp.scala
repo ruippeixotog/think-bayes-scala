@@ -6,27 +6,6 @@ import thinkbayes.extensions.Stats._
 import thinkbayes.utils.Beta
 import Euro._
 
-class Euro(unit: Double = 1.0) extends Suite[Double, CoinSide] {
-  (0.0 to 100.0 by unit).foreach(incr(_))
-  normalize()
-
-  def setTrianglePrior() {
-    (0.0 to 100.0 by unit).foreach { hypo =>
-      set(hypo, if(hypo <= 50.0) hypo else 100.0 - hypo)
-    }
-    normalize()
-  }
-
-  override def likelihood(data: CoinSide, hypo: Double) =
-    (if(data == Heads) hypo else 100.0 - hypo) / 100.0
-}
-
-object Euro {
-  type CoinSide = Boolean
-  val Heads = true
-  val Tails = false
-}
-
 /**
  * Application for solving the Euro problem (page 29):
  *
@@ -38,6 +17,28 @@ object Euro {
  * But do these data give evidence that the coin is biased rather than fair?"
  */
 object EuroApp extends App {
+
+  type CoinSide = Boolean
+  val Heads = true
+  val Tails = false
+
+  class Euro(unit: Double = 1.0) extends Suite[Double, CoinSide] {
+    (0.0 to 100.0 by unit).foreach(incr(_))
+    normalize()
+
+    def setTrianglePrior() {
+      (0.0 to 100.0 by unit).foreach { hypo =>
+        set(hypo, if(hypo <= 50.0) hypo else 100.0 - hypo)
+      }
+      normalize()
+    }
+
+    override def likelihood(data: CoinSide, hypo: Double) =
+      (if(data == Heads) hypo else 100.0 - hypo) / 100.0
+  }
+
+  // ---------
+
   val suite = new Euro()
   val suite2 = new Euro()
   suite2.setTrianglePrior()

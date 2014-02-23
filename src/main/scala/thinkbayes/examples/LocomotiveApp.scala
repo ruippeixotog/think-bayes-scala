@@ -4,14 +4,6 @@ import thinkbayes.Suite
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 
-class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
-  hypos.foreach { hypo => set(hypo, math.pow(hypo, -alpha)) }
-  normalize()
-
-  def likelihood(data: Int, hypo: Int) =
-    if(hypo < data) 0 else 1.0 / hypo
-}
-
 /**
  * Application for solving the locomotive problem (page 20):
  *
@@ -19,6 +11,17 @@ class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
  * the number 60. Estimate how many locomotives the railroad has."
  */
 object LocomotiveApp extends App {
+
+  class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
+    hypos.foreach { hypo => set(hypo, math.pow(hypo, -alpha)) }
+    normalize()
+
+    def likelihood(data: Int, hypo: Int) =
+      if(hypo < data) 0 else 1.0 / hypo
+  }
+
+  // ---------
+
   val suite = new Locomotive(1 to 1000)
   val suite2 = new Locomotive(1 to 1000, 1.0)
 
