@@ -60,4 +60,6 @@ object Cdf {
     cdf.vals = cdf.vals.map { case (key, prob) => (key, prob / total) }
     cdf
   }
+
+  def apply[K: Ordering](values: TraversableOnce[K]) = Pmf(values).toCdf
 }
