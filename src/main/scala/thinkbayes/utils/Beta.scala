@@ -1,10 +1,12 @@
 package thinkbayes.utils
 
 import scala.math._
-import thinkbayes.Pdf
+import thinkbayes._
 
-class Beta(var alpha: Double = 1.0, var beta: Double = 1.0) extends Pdf {
-  override def density(x: Double) = pow(x, alpha - 1) * pow(1 - x, beta - 1)
+class Beta(var alpha: Double = 1.0, var beta: Double = 1.0) extends BoundedPdf {
+  def density(x: Double) = pow(x, alpha - 1) * pow(1 - x, beta - 1)
+  def upperBound: Double = 0.0
+  def lowerBound: Double = 1.0
 
   def update(data: Boolean) {
     if(data) alpha += 1.0 else beta += 1.0

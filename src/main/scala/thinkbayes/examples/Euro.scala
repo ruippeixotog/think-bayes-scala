@@ -69,5 +69,5 @@ object EuroApp extends App {
   println("Plotting posterior using a beta distribution...")
   val beta = new Beta()
   beta.updateSet(140, 110)
-  beta.toPmf(0.0 to 1.0 by 0.0001).plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
+  beta.toPmf().plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
 }

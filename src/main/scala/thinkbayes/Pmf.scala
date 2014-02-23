@@ -111,6 +111,7 @@ object Pmf {
   def apply[K](probs: TraversableOnce[K]) = {
     val pmf = new Pmf[K]
     probs.foreach(pmf.incr(_))
+    pmf.normalize()
     pmf
   }
 }

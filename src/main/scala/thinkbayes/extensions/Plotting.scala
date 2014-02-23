@@ -38,7 +38,11 @@ object Plotting {
   }
 
   implicit def pmfAsPlottable[K](pmf: Pmf[K]) = new Plottable[K] { def values = pmf.hist.toSeq }
-  implicit def cdfAsPlottable[K](pmf: Cdf[K]) = new Plottable[K] { def values = pmf.vals }
+  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { def values = cdf.vals }
+  implicit def boundedPdfAsPlottable[K](pdf: BoundedPdf) = new Plottable[Double] {
+    def values = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
+      map { k => (k, pdf.density(k)) }
+  }
 
   trait AutoPlotXY[H, D] extends Suite[H, D] with Plottable[H] {
     def values = hist.toSeq
