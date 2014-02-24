@@ -4,7 +4,6 @@ import thinkbayes.Suite
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 import thinkbayes.utils.Beta
-import Euro._
 
 /**
  * Application for solving the Euro problem (page 29):

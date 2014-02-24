@@ -1,7 +1,6 @@
 package thinkbayes.examples
 
 import thinkbayes.Suite
-import MM._
 
 /**
  * Application for solving the M&M problem (page 6):
