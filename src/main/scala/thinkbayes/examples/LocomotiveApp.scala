@@ -28,26 +28,31 @@ object LocomotiveApp extends App {
   val priorPlot = prior.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
   prior2.plotXYOn(priorPlot, "Power law")
 
+  println()
   println("Plotting posteriors after a train with number 60 is seen...")
   val posterior = prior.observed(60)
   val posterior2 = prior2.observed(60)
   val postPlot = posterior.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
   posterior2.plotXYOn(postPlot, "Power law")
 
+  println()
   println("Mean of the distribution after #60 is seen:")
   println("Uniform prior: " + posterior.pmf.mean)
   println("Power law prior: " + posterior2.pmf.mean)
 
+  println()
   println("90% credible interval after #60 is seen:")
   println("Uniform prior: " + posterior.pmf.credibleInterval(0.9))
   println("Power law prior: " + posterior2.pmf.credibleInterval(0.9))
 
+  println()
   println("Mean of the distribution after #30 and #90 are seen after #60:")
   val posterior3 = posterior.observed(60, 90)
   val posterior4 = posterior2.observed(60, 90)
   println("Uniform prior: " + posterior3.pmf.mean)
   println("Power law prior: " + posterior4.pmf.mean)
 
+  println()
   println("90% credible interval after #30 and #90 are seen after #60:")
   println("Uniform prior: " + posterior3.pmf.credibleInterval(0.9))
   println("Power law prior: " + posterior4.pmf.credibleInterval(0.9))
