@@ -5,7 +5,8 @@ class Cdf[K: Ordering] {
 
   def prob(key: K): Double = searchBy[(K, Double), K](vals, key, _._1) match {
     case Left((_, p)) => p
-    case Right(_) => throw new NoSuchElementException
+    case Right(nextIdx) if nextIdx == 0 => 0.0
+    case Right(nextIdx) => vals(nextIdx - 1)._2
   }
 
   def value(prob: Double): K = searchBy[(K, Double), Double](vals, prob, _._2) match {

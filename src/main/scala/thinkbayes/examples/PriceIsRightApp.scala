@@ -40,14 +40,20 @@ import thinkbayes.extensions.Plotting._
  */
 object PriceIsRightApp extends App {
 
+  val maxPrice = 75000.0
+  val step = 100.0
+
   case class Player(prices: Array[Int], bids: Array[Int], diffs: Array[Int]) {
     val showcasePdf = estimatePdf(prices)
-    val showcasePmf = showcasePdf.toPmf(0.0 to 80000.0 by 80.0)
+    val showcasePmf = showcasePdf.toPmf(0.0 to maxPrice by step)
     val diffCdf = Cdf(diffs)
 
     val errorMean = 0.0
     val errorStdev = new StandardDeviation().evaluate(diffs.map(_.toDouble))
     val errorPdf = normalPdf(errorMean, errorStdev)
+
+    def probOverbid: Double = diffCdf.prob(-1)
+    def probWorseThan(diff: Int): Double = 1.0 - diffCdf.prob(diff)
   }
 
   class Price(player: Player) extends Suite[Double, Double] {
@@ -55,6 +61,32 @@ object PriceIsRightApp extends App {
 
     def likelihood(guess: Double, showcase: Double): Double =
       player.errorPdf.density(showcase - guess)
+  }
+
+  case class GainCalculator(player: Player, opponent: Player, playerGuess: Int, opponentGuess: Int) {
+    val playerSuite = new Price(player)
+    playerSuite.update(playerGuess)
+
+    val opponentSuite = new Price(opponent)
+    opponentSuite.update(opponentGuess)
+
+    def probWin(diff: Int): Double = opponent.probOverbid + opponent.probWorseThan(diff)
+
+    def gain(bid: Int, price: Int): Double =
+      if(bid > price) 0
+      else {
+        val diff = price - bid
+        val prob = probWin(diff)
+
+        if(diff <= 250) 2 * price * prob
+        else price * prob
+      }
+
+    def expectedGain(bid: Int): Double =
+      playerSuite.hist.map { case (price, prob) => prob * gain(bid, price.toInt) }.sum
+
+    def optimalBid: (Double, Double) =
+      (0.0 to maxPrice by step).map { bid => (expectedGain(bid.toInt), bid) }.max.swap
   }
 
   // ---------
@@ -91,9 +123,20 @@ object PriceIsRightApp extends App {
   println("Plotting prior and posterior distributions for player 1 based on a best guess of 20000$...")
   val guessChartTitle = "Distributions for player 1 based on a best guess of 20000$"
 
-  val price = new Price(player1)
-  val guessChart = price.plotXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
+  val priceSuite = new Price(player1)
+  val guessChart = priceSuite.plotXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
 
-  price.update(20000)
-  price.plotXYOn(guessChart, "Posterior")
+  priceSuite.update(20000)
+  priceSuite.plotXYOn(guessChart, "Posterior")
+
+  // ---------
+
+  println()
+  println("Optimal bids when the best guess of player 1 is 20000$ and the best guess of player 2 is 40000$:")
+
+  val (optimal1, gain1) = GainCalculator(player1, player2, 20000, 40000).optimalBid
+  val (optimal2, gain2) = GainCalculator(player2, player1, 40000, 20000).optimalBid
+
+  println("Player 1 bid: %.2f$, with expected gain of %.2f$".format(optimal1, gain1))
+  println("Player 2 bid: %.2f$, with expected gain of %.2f$".format(optimal2, gain2))
 }
