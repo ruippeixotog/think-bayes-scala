@@ -1,6 +1,6 @@
 package thinkbayes.examples
 
-import thinkbayes.Suite
+import thinkbayes._
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 import thinkbayes.utils.Beta
@@ -21,16 +21,16 @@ object EuroApp extends App {
   val Heads = true
   val Tails = false
 
-  class Euro(unit: Double = 1.0) extends Suite[Double, CoinSide] {
-    (0.0 to 100.0 by unit).foreach(incr(_))
-    normalize()
+  def trianglePmf(unit: Double = 1.0): Pmf[Double] = {
+    val hist = (0.0 to 100.0 by unit).map { hypo =>
+      (hypo, if(hypo <= 50.0) hypo else 100.0 - hypo)
+    }.toMap
 
-    def setTrianglePrior() {
-      (0.0 to 100.0 by unit).foreach { hypo =>
-        set(hypo, if(hypo <= 50.0) hypo else 100.0 - hypo)
-      }
-      normalize()
-    }
+    Pmf(hist).normalized
+  }
+
+  case class Euro(unit: Double = 1.0, triangle: Boolean = false) extends Suite[Double, CoinSide] {
+    val pmf = if(triangle) trianglePmf(unit) else Pmf(0.0 to 100.0 by unit)
 
     override def likelihood(data: CoinSide, hypo: Double) =
       (if(data == Heads) hypo else 100.0 - hypo) / 100.0
@@ -38,33 +38,32 @@ object EuroApp extends App {
 
   // ---------
 
-  val suite = new Euro()
-  val suite2 = new Euro()
-  suite2.setTrianglePrior()
+  val unifPrior = Euro()
+  val triPrior = Euro(triangle = true)
 
   println("Plotting priors...")
-  val priorPlot = suite.plotXY("Uniform", title = "Prior", xLabel = "Probability of heads (%)")
-  suite2.plotXYOn(priorPlot, "Triangle")
+  val priorPlot = unifPrior.plotXY("Uniform", title = "Prior", xLabel = "Probability of heads (%)")
+  triPrior.plotXYOn(priorPlot, "Triangle")
 
   println("Plotting posteriors after 140 heads and 110 tails are seen...")
   val dataset = Seq.fill(140)(Heads) ++ Seq.fill(110)(Tails)
-  suite.updateSet(dataset)
-  suite2.updateSet(dataset)
+  val unifPosterior = unifPrior.observedSet(dataset)
+  val triPosterior = triPrior.observedSet(dataset)
 
-  val postPlot = suite.plotXY("Uniform", title = "Posterior", xLabel = "Probability of heads (%)")
-  suite2.plotXYOn(postPlot, "Triangle")
+  val postPlot = unifPosterior.plotXY("Uniform", title = "Posterior", xLabel = "Probability of heads (%)")
+  triPosterior.plotXYOn(postPlot, "Triangle")
 
   println("Posterior distribution stats with uniform prior:")
-  println("Hypothesis with highest probability: " + suite.max)
-  println("Mean of the distribution: " + suite.mean)
-  println("Median of the distribution: " + suite.percentile(0.5))
-  println("90%% credible interval: " + suite.credibleInterval(0.9))
+  println("Hypothesis with highest probability: " + unifPosterior.pmf.max)
+  println("Mean of the distribution: " + unifPosterior.pmf.mean)
+  println("Median of the distribution: " + unifPosterior.pmf.percentile(0.5))
+  println("90%% credible interval: " + unifPosterior.pmf.credibleInterval(0.9))
 
   println("Posterior distribution stats with triangle prior:")
-  println("Hypothesis with highest probability: " + suite2.max)
-  println("Mean of the distribution: " + suite2.mean)
-  println("Median of the distribution: " + suite2.percentile(0.5))
-  println("90%% credible interval: " + suite2.credibleInterval(0.9))
+  println("Hypothesis with highest probability: " + triPosterior.pmf.max)
+  println("Mean of the distribution: " + triPosterior.pmf.mean)
+  println("Median of the distribution: " + triPosterior.pmf.percentile(0.5))
+  println("90%% credible interval: " + triPosterior.pmf.credibleInterval(0.9))
 
   println("Plotting posterior using a beta distribution...")
   val beta = new Beta()

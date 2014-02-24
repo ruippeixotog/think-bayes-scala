@@ -1,6 +1,6 @@
 package thinkbayes.examples
 
-import thinkbayes.Suite
+import thinkbayes._
 
 /**
  * Application for solving the M&M problem (page 6):
@@ -29,9 +29,8 @@ object MMApp extends App {
   val mix96 = Map(
     "blue" -> 24, "green" -> 20, "orange" -> 16, "yellow" -> 14, "red" -> 13, "brown" -> 13)
 
-  class MM(hypos: Seq[Char], hypoDefs: Map[Char, Map[Bag, Mix]]) extends Suite[Char, (Bag, Color)] {
-    hypos.foreach(set(_, 1))
-    normalize()
+  case class MM(hypos: Seq[Char], hypoDefs: Map[Char, Map[Bag, Mix]]) extends Suite[Char, (Bag, Color)] {
+    val pmf = Pmf(hypos)
 
     def likelihood(data: (Bag, Color), hypo: Char) =
       hypoDefs(hypo)(data._1).getOrElse(data._2, 0).toDouble
@@ -42,9 +41,8 @@ object MMApp extends App {
   val hypoA = Map("bag1" -> mix94, "bag2" -> mix96)
   val hypoB = Map("bag1" -> mix96, "bag2" -> mix94)
 
-  val suite = new MM("AB", Map('A' -> hypoA, 'B' -> hypoB))
+  val prior = MM("AB", Map('A' -> hypoA, 'B' -> hypoB))
 
-  suite.update("bag1", "yellow")
-  suite.update("bag2", "green")
-  suite.printChart()
+  val posterior = prior.observed("bag1" -> "yellow", "bag2" -> "green")
+  posterior.printChart()
 }

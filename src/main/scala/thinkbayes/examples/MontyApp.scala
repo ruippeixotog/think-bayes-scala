@@ -1,6 +1,6 @@
 package thinkbayes.examples
 
-import thinkbayes.Suite
+import thinkbayes._
 
 /**
  * Application for solving the Monty Hall problem (page 7):
@@ -27,9 +27,8 @@ import thinkbayes.Suite
  */
 object MontyApp extends App {
 
-  class Monty(hypos: Seq[Char], firstChoice: Char) extends Suite[Char, Char] {
-    hypos.foreach(set(_, 1))
-    normalize()
+  case class Monty(hypos: Seq[Char], firstChoice: Char) extends Suite[Char, Char] {
+    val pmf = Pmf(hypos)
 
     def likelihood(opened: Char, hypo: Char) =
       if (opened == hypo) 0 // if the door was opened, it is surely not the winning door
@@ -39,13 +38,13 @@ object MontyApp extends App {
 
   // ---------
 
-  val suite = new Monty("ABC", 'A') // doors A, B and C, first choice is A
+  val prior = Monty("ABC", 'A') // doors A, B and C, first choice is A
 
   println("Before any door is opened:")
-  suite.printChart() // print the probability of each hypothesis
+  prior.printChart() // print the probability of each hypothesis
 
   println()
   println("After Monty opens door B:")
-  suite.update('B') // Monty opens B
-  suite.printChart() // print the probability of each hypothesis
+  val posterior = prior.observed('B') // Monty opens B
+  posterior.printChart() // print the probability of each hypothesis
 }

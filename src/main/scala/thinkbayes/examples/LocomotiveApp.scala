@@ -1,6 +1,6 @@
 package thinkbayes.examples
 
-import thinkbayes.Suite
+import thinkbayes._
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 
@@ -12,9 +12,8 @@ import thinkbayes.extensions.Stats._
  */
 object LocomotiveApp extends App {
 
-  class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
-    hypos.foreach { hypo => set(hypo, math.pow(hypo, -alpha)) }
-    normalize()
+  case class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
+    val pmf = Pmf(hypos.map { hypo => (hypo, math.pow(hypo, -alpha)) }.toMap).normalized
 
     def likelihood(data: Int, hypo: Int) =
       if(hypo < data) 0 else 1.0 / hypo
@@ -22,34 +21,34 @@ object LocomotiveApp extends App {
 
   // ---------
 
-  val suite = new Locomotive(1 to 1000)
-  val suite2 = new Locomotive(1 to 1000, 1.0)
+  val prior = Locomotive(1 to 1000)
+  val prior2 = Locomotive(1 to 1000, 1.0)
 
   println("Plotting priors...")
-  val priorPlot = suite.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
-  suite2.plotXYOn(priorPlot, "Power law")
+  val priorPlot = prior.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
+  prior2.plotXYOn(priorPlot, "Power law")
 
   println("Plotting posteriors after a train with number 60 is seen...")
-  suite.update(60)
-  suite2.update(60)
-  val postPlot = suite.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
-  suite2.plotXYOn(postPlot, "Power law")
+  val posterior = prior.observed(60)
+  val posterior2 = prior2.observed(60)
+  val postPlot = posterior.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
+  posterior2.plotXYOn(postPlot, "Power law")
 
   println("Mean of the distribution after #60 is seen:")
-  println("Uniform prior: " + suite.mean)
-  println("Power law prior: " + suite2.mean)
+  println("Uniform prior: " + posterior.pmf.mean)
+  println("Power law prior: " + posterior2.pmf.mean)
 
   println("90% credible interval after #60 is seen:")
-  println("Uniform prior: " + suite.credibleInterval(0.9))
-  println("Power law prior: " + suite2.credibleInterval(0.9))
+  println("Uniform prior: " + posterior.pmf.credibleInterval(0.9))
+  println("Power law prior: " + posterior2.pmf.credibleInterval(0.9))
 
   println("Mean of the distribution after #30 and #90 are seen after #60:")
-  List(60, 90).foreach(suite.update)
-  List(60, 90).foreach(suite2.update)
-  println("Uniform prior: " + suite.mean)
-  println("Power law prior: " + suite2.mean)
+  val posterior3 = posterior.observed(60, 90)
+  val posterior4 = posterior2.observed(60, 90)
+  println("Uniform prior: " + posterior3.pmf.mean)
+  println("Power law prior: " + posterior4.pmf.mean)
 
   println("90% credible interval after #30 and #90 are seen after #60:")
-  println("Uniform prior: " + suite.credibleInterval(0.9))
-  println("Power law prior: " + suite2.credibleInterval(0.9))
+  println("Uniform prior: " + posterior3.pmf.credibleInterval(0.9))
+  println("Power law prior: " + posterior4.pmf.credibleInterval(0.9))
 }

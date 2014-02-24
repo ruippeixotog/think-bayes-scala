@@ -17,35 +17,27 @@ import thinkbayes.extensions.Sampling._
  */
 object DungeonsApp extends App {
 
-  class Die(sides: Int) extends Pmf[Int] {
-    (1 to sides).foreach(set(_, 1))
-    normalize()
-  }
+  def die(sides: Int) = Pmf(1 to sides)
 
   // ---------
 
   // sum and maxima
-  val three = Seq.fill(3)(new Die(6))
+  val three = Seq.fill(3)(die(6))
 
-  val threeSum = sampleSum(three, 1000)
-  threeSum.normalize()
-
-  val threeSumExact = three.reduce[Pmf[Int]](_ + _)
-  threeSumExact.normalize()
+  val threeSum = sampleSum(three, 1000).normalized
+  val threeSumExact = three.reduce[Pmf[Int]](_ + _).normalized
 
   val chartSum = threeSum.plotXY("Sample", title = "Sum of three d6", xLabel = "Sum")
   threeSumExact.plotXYOn(chartSum, "Exact")
 
-  val threeMax = sampleMax(three, 1000)
-  threeMax.normalize()
-
-  val threeMaxExp = new Die(6).toCdf.pow(3).toPmf
+  val threeMax = sampleMax(three, 1000).normalized
+  val threeMaxExp = die(6).toCdf.pow(3).toPmf
 
   val chartMax = threeMax.plotXY("Sample", title = "Max of three d6", xLabel = "Max")
   threeMaxExp.plotXYOn(chartMax, "Exponential")
 
   // mixture
-  val five = Pmf(List(4, 6, 8, 12, 20).map(new Die(_)))
+  val five = Pmf(List(4, 6, 8, 12, 20).map(die))
   val mix = five.mixture
 
   mix.plotBar(title = "Outcome of random die from a box", xLabel = "Outcome")

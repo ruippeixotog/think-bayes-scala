@@ -56,19 +56,16 @@ object PriceIsRightApp extends App {
     def probWorseThan(diff: Int): Double = 1.0 - diffCdf.prob(diff)
   }
 
-  class Price(player: Player) extends Suite[Double, Double] {
-    player.showcasePmf.hist.foreach { case (k, prob) => set(k, prob) }
+  case class Price(player: Player) extends Suite[Double, Double] {
+    val pmf = player.showcasePmf
 
     def likelihood(guess: Double, showcase: Double): Double =
       player.errorPdf.density(showcase - guess)
   }
 
   case class GainCalculator(player: Player, opponent: Player, playerGuess: Int, opponentGuess: Int) {
-    val playerSuite = new Price(player)
-    playerSuite.update(playerGuess)
-
-    val opponentSuite = new Price(opponent)
-    opponentSuite.update(opponentGuess)
+    val playerSuite = Price(player).observed(playerGuess)
+    val opponentSuite = Price(opponent).observed(opponentGuess)
 
     def probWin(diff: Int): Double = opponent.probOverbid + opponent.probWorseThan(diff)
 
@@ -123,11 +120,11 @@ object PriceIsRightApp extends App {
   println("Plotting prior and posterior distributions for player 1 based on a best guess of 20000$...")
   val guessChartTitle = "Distributions for player 1 based on a best guess of 20000$"
 
-  val priceSuite = new Price(player1)
-  val guessChart = priceSuite.plotXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
+  val pricePrior = Price(player1)
+  val guessChart = pricePrior.plotXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
 
-  priceSuite.update(20000)
-  priceSuite.plotXYOn(guessChart, "Posterior")
+  val pricePosterior = pricePrior.observed(20000)
+  pricePosterior.plotXYOn(guessChart, "Posterior")
 
   // ---------
 

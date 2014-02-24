@@ -1,7 +1,6 @@
 package thinkbayes
 
-class Cdf[K: Ordering] {
-  var vals = IndexedSeq.empty[(K, Double)]
+case class Cdf[K: Ordering](vals: IndexedSeq[(K, Double)]) {
 
   def prob(key: K): Double = searchBy[(K, Double), K](vals, key, _._1) match {
     case Left((_, p)) => p
@@ -15,19 +14,14 @@ class Cdf[K: Ordering] {
     case Right(nextIdx) => vals(nextIdx)._1
   }
 
-  def pow(p: Double)(implicit num: Numeric[K]): Cdf[K] = {
-    val cdf = new Cdf[K]
-    cdf.vals = vals.map { case (k, prob) => (k, math.pow(prob, p)) }
-    cdf
-  }
+  def pow(p: Double)(implicit num: Numeric[K]): Cdf[K] =
+    Cdf(vals.map { case (k, prob) => (k, math.pow(prob, p)) })
 
   def toPmf: Pmf[K] = {
-    val pmf = new Pmf[K]
-    vals.foldLeft(0.0) { case (last, (k, prob)) =>
-      pmf.set(k, prob - last)
-      prob
-    }
-    pmf
+    val pmfHist = vals.foldLeft(Map.empty[K, Double], 0.0) {
+      case ((acc, last), (k, prob)) => (acc.updated(k, prob - last), prob)
+    }._1
+    Pmf(pmfHist)
   }
 
   private[this] def searchBy[A, V <% Ordered[V]](xs: IndexedSeq[A], target: V, f: A => V): Either[A, Int] = {
@@ -50,17 +44,12 @@ class Cdf[K: Ordering] {
 
 object Cdf {
 
-  def apply[K: Ordering](values: Seq[(K, Double)]): Cdf[K] = {
-    val cdf = new Cdf[K]
-    var total = 0.0
-    cdf.vals = values.sorted.map { case (key, prob) =>
-      total += prob
-      (key, total)
-    }.toIndexedSeq
-
-    cdf.vals = cdf.vals.map { case (key, prob) => (key, prob / total) }
-    cdf
+  def apply[K: Ordering](values: (K, Double)*): Cdf[K] = {
+    val (vals, total) = values.sorted.foldLeft(IndexedSeq.empty[(K, Double)], 0.0) {
+      case ((acc, prevTotal), (key, prob)) => (acc :+ (key, prevTotal + prob), prevTotal + prob)
+    }
+    Cdf(vals.map { case (key, prob) => (key, prob / total) })
   }
 
-  def apply[K: Ordering](values: TraversableOnce[K]) = Pmf(values).toCdf
+  def apply[K: Ordering](keys: TraversableOnce[K]): Cdf[K] = Pmf(keys).toCdf
 }

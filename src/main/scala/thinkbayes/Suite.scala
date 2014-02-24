@@ -1,6 +1,8 @@
 package thinkbayes
 
-abstract class Suite[H, D] extends Pmf[H] {
+trait Suite[H, D] {
+
+  def pmf: Pmf[H]
 
   /**
    * Computes the likelihood of a given data under an hypothesis.
@@ -15,10 +17,12 @@ abstract class Suite[H, D] extends Pmf[H] {
    * Modifies the suite directly; if you want to keep the original, make a copy.
    * @param data the representation of the data to use to update the suite
    */
-  def update(data: D) {
-    hist = hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
-    normalize()
+  def observed(data: D): Suite[H, D] = {
+    val newHist = pmf.hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
+    Suite(Pmf(newHist).normalized)(likelihood)
   }
+
+  def observed(dataset: D*): Suite[H, D] = observedSet(dataset)
 
   /**
    * Updates each hypothesis based on the dataset.
@@ -27,10 +31,18 @@ abstract class Suite[H, D] extends Pmf[H] {
    * Modifies the suite directly; if you want to keep the original, make a copy.
    * @param dataset a sequence of data values to use to update the suite
    */
-  def updateSet(dataset: TraversableOnce[D]) {
-    dataset.foreach { data =>
-      hist = hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
+  def observedSet(dataset: TraversableOnce[D]): Suite[H, D] = {
+    val newHist = dataset.foldLeft(pmf.hist) { case (acc, data) =>
+      acc.map { case (h, prob) => (h, prob * likelihood(data, h)) }
     }
-    normalize()
+    Suite(Pmf(newHist).normalized)(likelihood)
+  }
+}
+
+object Suite {
+
+  def apply[H, D](distr: Pmf[H])(likelihoodFunc: (D, H) => Double) = new Suite[H, D] {
+    val pmf = distr
+    def likelihood(data: D, hypo: H) = likelihoodFunc(data, hypo)
   }
 }
