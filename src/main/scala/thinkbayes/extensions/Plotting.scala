@@ -2,7 +2,7 @@ package thinkbayes.extensions
 
 import java.awt._
 import javax.swing.UIManager
-import org.jfree.chart.{ ChartTheme, StandardChartTheme }
+import org.jfree.chart._
 import org.jfree.chart.block.LineBorder
 import org.jfree.chart.title.{ LegendTitle, Title }
 import org.jfree.chart.plot.DefaultDrawingSupplier
@@ -10,6 +10,7 @@ import org.jfree.chart.renderer.category.StandardBarPainter
 import org.jfree.chart.renderer.xy.StandardXYBarPainter
 import org.jfree.data.xy.XYSeriesCollection
 import org.jfree.ui.RectangleInsets
+import scala.swing.Swing._
 import scalax.chart._
 import scalax.chart.Charting._
 import thinkbayes._
@@ -24,7 +25,8 @@ object Plotting {
       val chart = BarChart(values.sorted.toCategoryDataset, title = title)
       chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
-      chart.show(dim = (800, 600))
+
+      showScalable(chart, title, (1024, 768))
       chart
     }
 
@@ -32,7 +34,8 @@ object Plotting {
       val chart = XYLineChart(values.toXYSeriesCollection(seriesName), title = title)
       chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
-      chart.show(dim = (800, 600))
+
+      showScalable(chart, title, (1024, 768))
       chart
     }
 
@@ -42,6 +45,15 @@ object Plotting {
           seriesList.addSeries(values.toXYSeries(seriesName))
       }
       chart
+    }
+
+    private[this] def showScalable(chart: DisplayableChart, windowTitle: String, dim: (Int, Int)) {
+      val frame = chart.toFrame(windowTitle)
+      val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
+      panel.setMaximumDrawWidth(Int.MaxValue)
+      panel.setMaximumDrawHeight(Int.MaxValue)
+      frame.size = dim
+      frame.visible = true
     }
   }
 
