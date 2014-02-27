@@ -3,6 +3,8 @@ package thinkbayes.extensions
 import java.awt._
 import javax.swing.UIManager
 import org.jfree.chart.{ ChartTheme, StandardChartTheme }
+import org.jfree.chart.block.LineBorder
+import org.jfree.chart.title.{ LegendTitle, Title }
 import org.jfree.chart.plot.DefaultDrawingSupplier
 import org.jfree.chart.renderer.category.StandardBarPainter
 import org.jfree.chart.renderer.xy.StandardXYBarPainter
@@ -126,5 +128,15 @@ object Plotting {
       ThinkBayesChartTheme.DarkSeriesStrokes,
       DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE,
       DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE))
+
+    override def applyToTitle(title: Title) {
+      super.applyToTitle(title)
+      title match {
+        case lt: LegendTitle =>
+          lt.setFrame(new LineBorder(new Color(0, 0, 0, 0),
+            new BasicStroke(),
+            RectangleInsets.ZERO_INSETS))
+      }
+    }
   }
 }
