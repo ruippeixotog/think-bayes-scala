@@ -7,9 +7,14 @@ import weka.estimators.KernelEstimator
 object Distributions {
 
   implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] = {
-    val values = (distrib.getSupportLowerBound to distrib.getSupportUpperBound).map {
-      k => (k, distrib.probability(k))
-    }
+    val lower =
+      if(distrib.getSupportLowerBound != Int.MinValue) distrib.getSupportLowerBound
+      else distrib.inverseCumulativeProbability(0.0001)
+    val upper =
+      if(distrib.getSupportUpperBound != Int.MaxValue) distrib.getSupportUpperBound
+      else distrib.inverseCumulativeProbability(0.9999)
+
+    val values = (lower to upper).map { k => (k, distrib.probability(k)) }
     Pmf(values: _*)
   }
 
@@ -34,4 +39,12 @@ object Distributions {
   }
 
   def normalPdf(mean: Double, stdev: Double): Pdf = new NormalDistribution(mean, stdev)
+
+  def normalPmf(mean: Double, stdev: Double, numSigmas: Double = 4.0, steps: Int = 1000): Pmf[Double] = {
+    val low = mean - numSigmas * stdev
+    val high = mean + numSigmas * stdev
+    normalPdf(mean, stdev).toPmf(low to high by ((high - low) / steps))
+  }
+
+  def poissionPmf(lam: Double): Pmf[Int] = new PoissonDistribution(lam)
 }
