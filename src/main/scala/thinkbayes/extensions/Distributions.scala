@@ -40,7 +40,7 @@ object Distributions {
 
   def normalPdf(mean: Double, stdev: Double): Pdf = new NormalDistribution(mean, stdev)
 
-  def normalPmf(mean: Double, stdev: Double, numSigmas: Double = 4.0, steps: Int = 1000): Pmf[Double] = {
+  def normalPmf(mean: Double, stdev: Double, numSigmas: Double = 4.0, steps: Int = 2000): Pmf[Double] = {
     val low = mean - numSigmas * stdev
     val high = mean + numSigmas * stdev
     normalPdf(mean, stdev).toPmf(low to high by ((high - low) / steps))

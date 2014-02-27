@@ -12,7 +12,7 @@ trait BoundedPdf extends Pdf {
   def lowerBound: Double
   def upperBound: Double
 
-  def toPmf(step: Double = (upperBound - lowerBound) / 10000): Pmf[Double] =
+  def toPmf(step: Double = (upperBound - lowerBound) / 2000): Pmf[Double] =
     toPmf(lowerBound to upperBound by step)
 }
 
