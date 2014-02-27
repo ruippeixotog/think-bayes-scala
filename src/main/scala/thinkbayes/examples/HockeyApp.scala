@@ -17,6 +17,6 @@ object HockeyApp extends App {
   val bruinsPosterior = Hockey.observed(0, 2, 8, 4)
   val canucksPosterior = Hockey.observed(1, 3, 1, 0)
 
-  val chart = bruinsPosterior.plotXY("Bruins")
+  val chart = bruinsPosterior.plotXY("Bruins", title = "Hockey", xLabel = "Goals")
   canucksPosterior.plotXYOn(chart, "Canucks")
 }
