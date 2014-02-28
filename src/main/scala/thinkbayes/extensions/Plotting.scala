@@ -6,8 +6,9 @@ import org.jfree.chart._
 import org.jfree.chart.block.LineBorder
 import org.jfree.chart.title.{ LegendTitle, Title }
 import org.jfree.chart.plot.DefaultDrawingSupplier
-import org.jfree.chart.renderer.category.StandardBarPainter
+import org.jfree.chart.renderer.category.{ BarRenderer, CategoryItemRenderer, StandardBarPainter }
 import org.jfree.chart.renderer.xy.StandardXYBarPainter
+import org.jfree.data.category.DefaultCategoryDataset
 import org.jfree.data.xy.XYSeriesCollection
 import org.jfree.ui.RectangleInsets
 import scala.swing.Swing._
@@ -21,12 +22,21 @@ object Plotting {
   trait Plottable[K] {
     def values: Seq[(K, Double)]
 
-    def plotBar(title: String = "", xLabel: String = "")(implicit ord: K => Ordered[K]): CategoryChart = {
-      val chart = BarChart(values.sorted.toCategoryDataset, title = title)
+    def plotBar(seriesName: String, title: String = "", xLabel: String = "")(implicit ord: K => Ordered[K]): CategoryChart = {
+      val categoryData = values.sorted.toIterable.map { case (k, prob) => (k, seriesName, prob) }
+      val chart = BarChart(categoryData.toCategoryDataset, title = title)
       chart.domainAxisLabel = xLabel
       chart.rangeAxisLabel = "probability"
 
       showScalable(chart, title, (1024, 768))
+      chart
+    }
+
+    def plotBarOn(chart: CategoryChart, seriesName: String)(implicit ord: K => Ordered[K]): chart.type = {
+      chart.plot.getDataset match {
+        case catDataset: DefaultCategoryDataset =>
+          values.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
+      }
       chart
     }
 
@@ -96,6 +106,13 @@ object Plotting {
 
     setBarPainter(new StandardBarPainter())
     setXYBarPainter(new StandardXYBarPainter())
+
+    override def applyToCategoryItemRenderer(renderer: CategoryItemRenderer) {
+      super.applyToCategoryItemRenderer(renderer)
+      renderer match {
+        case br: BarRenderer => br.setItemMargin(0.0)
+      }
+    }
   }
 
   lazy val lightChartTheme: ChartTheme = new ThinkBayesChartTheme("think-bayes-light") {

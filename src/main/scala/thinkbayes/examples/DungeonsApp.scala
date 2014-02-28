@@ -40,5 +40,5 @@ object DungeonsApp extends App {
   val five = Pmf(List(4, 6, 8, 12, 20).map(die))
   val mix = five.mixture
 
-  mix.plotBar(title = "Outcome of random die from a box", xLabel = "Outcome")
+  mix.plotBar("Outcome", title = "Outcome of random die from a box", xLabel = "Outcome")
 }
