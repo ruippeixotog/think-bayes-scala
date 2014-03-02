@@ -53,18 +53,30 @@ case class Pmf[K](hist: Map[K, Double]) {
   def -(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.minus)
 
   def mixture[K2](implicit ev: K <:< Pmf[K2]): Pmf[K2] = {
-    val mixHist = hist.foldLeft(Seq.empty[(K2, Double)]) { case (acc, (outcome, weight)) =>
+    val mixHist = hist.foldLeft(Map.empty[K2, Double]) { case (acc, (outcome, weight)) =>
       outcome.hist.foldLeft(acc) { case (acc2, (k, prob)) =>
-        acc2 :+ (k, weight * prob)
+        acc2.updated(k, acc2.getOrElse(k, 0.0) + weight * prob)
       }
     }
-    Pmf(mixHist: _*)
+    Pmf(mixHist).normalized
   }
 
   def toCdf(implicit ord: Ordering[K]): Cdf[K] = Cdf(hist.toSeq: _*)
 }
 
 object Pmf {
-  def apply[K](probs: (K, Double)*): Pmf[K] = Pmf(probs.groupBy(_._1).mapValues(_.map(_._2).sum))
-  def apply[K](keys: TraversableOnce[K]): Pmf[K] = Pmf(keys.map((_, 1.0)).toSeq: _*).normalized
+
+  def apply[K](probs: (K, Double)*): Pmf[K] = {
+    val hist = probs.foldLeft(Map.empty[K, Double]) { case (acc, (k, prob)) =>
+      acc.updated(k, acc.getOrElse(k, 0.0) + prob)
+    }
+    Pmf(hist).normalized
+  }
+
+  def apply[K](keys: TraversableOnce[K]): Pmf[K] = {
+    val hist = keys.foldLeft(Map.empty[K, Double]) { case (acc, k) =>
+      acc.updated(k, acc.getOrElse(k, 0.0) + 1.0)
+    }
+    Pmf(hist).normalized
+  }
 }
