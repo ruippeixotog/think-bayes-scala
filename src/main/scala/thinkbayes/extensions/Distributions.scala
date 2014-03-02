@@ -47,4 +47,12 @@ object Distributions {
   }
 
   def poissionPmf(lam: Double): Pmf[Int] = new PoissonDistribution(lam)
+
+  def exponentialPdf(lam: Double): Pdf = new ExponentialDistribution(1.0 / lam)
+
+  def exponentialPmf(lam: Double, high: Double = Double.PositiveInfinity, steps: Int = 2000): Pmf[Double] = {
+    val distrib = new ExponentialDistribution(1.0 / lam)
+    val realHigh = if(high.isPosInfinity) distrib.inverseCumulativeProbability(0.9999) else high
+    distrib.toPmf(0.0 to realHigh by (realHigh / steps))
+  }
 }

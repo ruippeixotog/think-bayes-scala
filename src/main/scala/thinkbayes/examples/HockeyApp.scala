@@ -16,13 +16,20 @@ import thinkbayes.extensions.Plotting._
 object HockeyApp extends App {
 
   object Hockey extends Suite[Double, Int] {
-    val pmf = normalPmf(2.7, 0.3)
+    val pmf = normalPmf(2.7, 0.3, steps = 100)
 
     def likelihood(k: Int, lam: Double) = poissionPmf(lam).prob(k)
   }
 
-  def goalPmf(goalsPerGamePmf: Pmf[Double]): Pmf[Int] = {
+  def numGoalsPmf(goalsPerGamePmf: Pmf[Double]): Pmf[Int] = {
     val probs = goalsPerGamePmf.hist.toSeq.map { case (lam, prob) => (poissionPmf(lam), prob) }
+    Pmf(probs: _*).mixture
+  }
+
+  def goalTimePmf(goalsPerGamePmf: Pmf[Double]): Pmf[Double] = {
+    val probs = goalsPerGamePmf.hist.toSeq.map { case (lam, prob) =>
+      (exponentialPmf(lam, high = 2.0), prob)
+    }
     Pmf(probs: _*).mixture
   }
 
@@ -40,18 +47,44 @@ object HockeyApp extends App {
   println("Plotting the distribution of goals in a single game...")
   val goalsChartTitle = "Goals in a single game"
 
-  val bruinsGoalPmf = goalPmf(bruinsPosterior.pmf)
-  val canucksGoalPmf = goalPmf(canucksPosterior.pmf)
+  val bruinsGoalsPmf = numGoalsPmf(bruinsPosterior.pmf)
+  val canucksGoalsPmf = numGoalsPmf(canucksPosterior.pmf)
 
-  val goalsChart = bruinsGoalPmf.plotXY("Bruins", title = goalsChartTitle, xLabel = "Goals")
-  canucksGoalPmf.plotXYOn(goalsChart, "Canucks")
+  val goalsChart = bruinsGoalsPmf.plotXY("Bruins", title = goalsChartTitle, xLabel = "Goals")
+  canucksGoalsPmf.plotXYOn(goalsChart, "Canucks")
 
   println()
-  println("Outcome probabilities:")
+  println("Outcome at the end of regulation play:")
 
-  val goalDiffCdf = bruinsGoalPmf - canucksGoalPmf
+  val goalDiffPmf = bruinsGoalsPmf - canucksGoalsPmf
 
-  println("Win: %.2f%%".format(goalDiffCdf.prob(_ > 0) * 100.0))
-  println("Tie: %.2f%%".format(goalDiffCdf.prob(0) * 100.0))
-  println("Lose: %.2f%%".format(goalDiffCdf.prob(_ < 0) * 100.0))
+  println("Win: %.2f%%".format(goalDiffPmf.prob(_ > 0) * 100.0))
+  println("Tie: %.2f%%".format(goalDiffPmf.prob(0) * 100.0))
+  println("Lose: %.2f%%".format(goalDiffPmf.prob(_ < 0) * 100.0))
+
+  println()
+  println("Plotting the distribution of the time between goals...")
+  val goalTimeChartTitle = "Time between goals"
+
+  val bruinsGoalTimePmf = goalTimePmf(bruinsPosterior.pmf)
+  val canucksGoalTimePmf = goalTimePmf(canucksPosterior.pmf)
+
+  val goalTimeChart = bruinsGoalTimePmf.plotXY("Bruins", title = goalTimeChartTitle, xLabel = "Games until goal")
+  canucksGoalTimePmf.plotXYOn(goalTimeChart, "Canucks")
+
+  println()
+  println("Outcome if an overtime occurs:")
+
+  val timeDiffPmf = bruinsGoalTimePmf - canucksGoalTimePmf
+
+  println("Win: %.2f%%".format(timeDiffPmf.prob(_ < 0) * 100.0))
+  println("Lose: %.2f%%".format(timeDiffPmf.prob(_ > 0) * 100.0))
+
+  println()
+
+  val probWin = goalDiffPmf.prob(_ > 0) + goalDiffPmf.prob(0) * timeDiffPmf.prob(_ < 0)
+  println("Overall probability of winning the next game: %.2f%%".format(probWin * 100.0))
+
+  val probWinSeries = probWin * probWin + 2 * probWin * (1 - probWin) * probWin
+  println("Overall probability of winning the series: %.2f%%".format(probWinSeries * 100.0))
 }

@@ -43,12 +43,13 @@ case class Pmf[K](hist: Map[K, Double]) {
   }
 
   def join[J](other: Pmf[K], comb: (K, K) => J)(implicit num: Numeric[K]): Pmf[J] = {
-    val joinedHist = for {
-      (k, prob) <- hist.toSeq
-      (k2, prob2) <- other.hist
-    } yield (comb(k, k2), prob * prob2)
-
-    Pmf(joinedHist: _*)
+    val joinHist = hist.foldLeft(Map.empty[J, Double]) { case (acc, (k, prob)) =>
+      other.hist.foldLeft(acc) { case (acc2, (k2, prob2)) =>
+        val ck = comb(k, k2)
+        acc2.updated(ck, acc2.getOrElse(ck, 0.0) + prob * prob2)
+      }
+    }
+    Pmf(joinHist).normalized
   }
 
   def +(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.plus)

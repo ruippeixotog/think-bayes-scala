@@ -4,6 +4,12 @@ trait Pdf {
 
   def density(x: Double): Double
 
+  def bounded(lower: Double, upper: Double) = new BoundedPdf {
+    def density(x: Double) = Pdf.this.density(x)
+    def lowerBound = lower
+    def upperBound = upper
+  }
+
   def toPmf(values: TraversableOnce[Double]): Pmf[Double] =
     Pmf(values.map { k => (k, density(k)) }.toMap).normalized
 }
