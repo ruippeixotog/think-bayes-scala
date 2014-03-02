@@ -94,6 +94,7 @@ object Plotting {
   }
 
   class ThinkBayesChartTheme(name: String) extends StandardChartTheme(name, false) {
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
     setExtraLargeFont(new Font("Helvetica Neue", Font.BOLD, 20))
     setLargeFont(new Font("Helvetica Neue", Font.BOLD, 14))
