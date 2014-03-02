@@ -11,6 +11,8 @@ case class Pmf[K](hist: Map[K, Double]) {
    */
   def prob(key: K) = hist.getOrElse(key, 0.0)
 
+  def prob(pred: K => Boolean) = hist.toIterator.filter { case (k, _) => pred(k) }.map(_._2).sum
+
   /**
    * Returns the value with the highest probability.
    * @return the value with the highest probability.

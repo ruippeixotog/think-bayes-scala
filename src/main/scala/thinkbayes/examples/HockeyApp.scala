@@ -37,7 +37,6 @@ object HockeyApp extends App {
   val perGameChart = bruinsPosterior.plotXY("Bruins", title = perGameChartTitle, xLabel = "Goals per game")
   canucksPosterior.plotXYOn(perGameChart, "Canucks")
 
-  println()
   println("Plotting the distribution of goals in a single game...")
   val goalsChartTitle = "Goals in a single game"
 
@@ -46,4 +45,13 @@ object HockeyApp extends App {
 
   val goalsChart = bruinsGoalPmf.plotXY("Bruins", title = goalsChartTitle, xLabel = "Goals")
   canucksGoalPmf.plotXYOn(goalsChart, "Canucks")
+
+  println()
+  println("Outcome probabilities:")
+
+  val goalDiffCdf = bruinsGoalPmf - canucksGoalPmf
+
+  println("Win: %.2f%%".format(goalDiffCdf.prob(_ > 0) * 100.0))
+  println("Tie: %.2f%%".format(goalDiffCdf.prob(0) * 100.0))
+  println("Lose: %.2f%%".format(goalDiffCdf.prob(_ < 0) * 100.0))
 }
