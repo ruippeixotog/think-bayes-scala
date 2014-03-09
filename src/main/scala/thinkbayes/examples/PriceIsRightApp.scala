@@ -80,7 +80,7 @@ object PriceIsRightApp extends App {
       }
 
     def expectedGain(bid: Int): Double =
-      playerSuite.hist.map { case (price, prob) => prob * gain(bid, price.toInt) }.sum
+      playerSuite.pmf.map { case (price, prob) => prob * gain(bid, price.toInt) }.sum
 
     def optimalBid: (Double, Double) =
       (0.0 to maxPrice by step).map { bid => (expectedGain(bid.toInt), bid) }.max.swap

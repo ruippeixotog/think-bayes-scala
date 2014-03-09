@@ -53,18 +53,21 @@ object EuroApp extends App {
   val postPlot = unifPosterior.plotXY("Uniform", title = "Posterior", xLabel = "Probability of heads (%)")
   triPosterior.plotXYOn(postPlot, "Triangle")
 
+  println()
   println("Posterior distribution stats with uniform prior:")
   println("Hypothesis with highest probability: " + unifPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + unifPosterior.pmf.mean)
   println("Median of the distribution: " + unifPosterior.pmf.percentile(0.5))
   println("90%% credible interval: " + unifPosterior.pmf.credibleInterval(0.9))
 
+  println()
   println("Posterior distribution stats with triangle prior:")
   println("Hypothesis with highest probability: " + triPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + triPosterior.pmf.mean)
   println("Median of the distribution: " + triPosterior.pmf.percentile(0.5))
   println("90%% credible interval: " + triPosterior.pmf.credibleInterval(0.9))
 
+  println()
   println("Plotting posterior using a beta distribution...")
   val beta = new Beta()
   beta.updateSet(140, 110)

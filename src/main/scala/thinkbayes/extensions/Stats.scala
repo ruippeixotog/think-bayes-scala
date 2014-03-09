@@ -12,7 +12,7 @@ object Stats {
         case (key, prob) +: rem if total + prob > p => key
         case (key, prob) +: rem => loop(rem, total + prob)
       }
-      loop(pmf.hist.toSeq.sorted, 0.0)
+      loop(pmf.toSeq.sorted, 0.0)
     }
 
     def credibleInterval(p: Double)(implicit ord: Ordering[K]): (K, K) =

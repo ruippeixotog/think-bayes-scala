@@ -1,7 +1,7 @@
 
 package object thinkbayes {
 
-  class HistogramUtils[K](val hist: Map[K, Double]) extends AnyVal {
+  implicit class HistogramUtils[K](val hist: Map[K, Double]) extends AnyVal {
 
     private def pad(str: String, n: Int): String =
       if(str.length > n) str.substring(0, n) else str + (" " * (n - str.length))
@@ -28,7 +28,6 @@ package object thinkbayes {
     }
   }
 
-  implicit def pmfHistogramUtils[K](pmf: Pmf[K]) = new HistogramUtils(pmf.hist)
   implicit def cdfHistogramUtils[K](cdf: Cdf[K]) = new HistogramUtils(cdf.vals.toMap)
-  implicit def suiteHistogramUtils[H](suite: Suite[H, _]) = new HistogramUtils(suite.pmf.hist)
+  implicit def suiteHistogramUtils[H](suite: Suite[H, _]) = new HistogramUtils(suite.pmf)
 }

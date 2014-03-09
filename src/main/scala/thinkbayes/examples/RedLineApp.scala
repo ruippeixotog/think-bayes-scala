@@ -37,10 +37,10 @@ object RedLineApp extends App {
   val second = 1.0 / 60.0
 
   def biasPmf(pmf: Pmf[Double]): Pmf[Double] =
-    Pmf(pmf.hist.map { case (k, prob) => (k, prob * k) }).normalized
+    pmf.map { case (k, prob) => (k, prob * k) }.normalized
 
   def waitTimePmf(biasPmf: Pmf[Double]): Pmf[Double] =
-    Pmf(biasPmf.hist.map { case (k, prob) => (Pmf(0.0 to k by 10 * second), prob) }).mixture
+    biasPmf.mapKeys { k => Pmf(0.0 to k by 10 * second) }.mixture
 
   case class WaitTimeCalculator(gapPmf: Pmf[Double]) {
     val biasedGapPmf = biasPmf(gapPmf)

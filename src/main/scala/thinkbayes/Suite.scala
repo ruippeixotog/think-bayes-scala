@@ -18,8 +18,8 @@ trait Suite[H, D] {
    * @param data the representation of the data to use to update the suite
    */
   def observed(data: D): Suite[H, D] = {
-    val newHist = pmf.hist.map { case (h, prob) => (h, prob * likelihood(data, h)) }
-    Suite(Pmf(newHist).normalized)(likelihood)
+    val newPmf = pmf.map { case (h, prob) => (h, prob * likelihood(data, h)) }.normalized
+    Suite(newPmf)(likelihood)
   }
 
   def observed(dataset: D*): Suite[H, D] = observedSet(dataset)
@@ -32,10 +32,11 @@ trait Suite[H, D] {
    * @param dataset a sequence of data values to use to update the suite
    */
   def observedSet(dataset: TraversableOnce[D]): Suite[H, D] = {
-    val newHist = dataset.foldLeft(pmf.hist) { case (acc, data) =>
+    val newPmf = dataset.foldLeft(pmf) { case (acc, data) =>
       acc.map { case (h, prob) => (h, prob * likelihood(data, h)) }
-    }
-    Suite(Pmf(newHist).normalized)(likelihood)
+    }.normalized
+
+    Suite(newPmf)(likelihood)
   }
 }
 
