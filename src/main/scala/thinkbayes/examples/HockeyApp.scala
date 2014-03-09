@@ -56,7 +56,7 @@ object HockeyApp extends App {
   println()
   println("Outcome at the end of regulation play:")
 
-  val goalDiffPmf = bruinsGoalsPmf - canucksGoalsPmf
+  val goalDiffPmf = bruinsGoalsPmf -- canucksGoalsPmf
 
   println("Win: %.2f%%".format(goalDiffPmf.prob(_ > 0) * 100.0))
   println("Tie: %.2f%%".format(goalDiffPmf.prob(0) * 100.0))
@@ -75,7 +75,7 @@ object HockeyApp extends App {
   println()
   println("Outcome if an overtime occurs:")
 
-  val timeDiffPmf = bruinsGoalTimePmf - canucksGoalTimePmf
+  val timeDiffPmf = bruinsGoalTimePmf -- canucksGoalTimePmf
 
   println("Win: %.2f%%".format(timeDiffPmf.prob(_ < 0) * 100.0))
   println("Lose: %.2f%%".format(timeDiffPmf.prob(_ > 0) * 100.0))

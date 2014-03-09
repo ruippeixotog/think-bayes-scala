@@ -25,7 +25,7 @@ object DungeonsApp extends App {
   val three = Seq.fill(3)(die(6))
 
   val threeSum = sampleSum(three, 1000).normalized
-  val threeSumExact = three.reduce[Pmf[Int]](_ + _).normalized
+  val threeSumExact = three.reduce[Pmf[Int]](_ ++ _).normalized
 
   val chartSum = threeSum.plotXY("Sample", title = "Sum of three d6", xLabel = "Sum")
   threeSumExact.plotXYOn(chartSum, "Exact")
