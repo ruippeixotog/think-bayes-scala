@@ -11,12 +11,16 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
   def iterator: Iterator[(K, Double)] = hist.iterator
   def get(key: K): Option[Double] = hist.get(key)
   override def empty: Pmf[K] = Pmf.empty
+  protected[this] override def newBuilder = Pmf.builder
 
   // overloaded methods to deal with the fact that a Pmf has a fixed value type
   def +(kv: (K, Double))(implicit dummy: DummyImplicit): Pmf[K] =
     Pmf(hist.updated(kv._1, hist.getOrElse(kv._1, 0.0) + kv._2))
 
   def mapValues(f: Double => Double)(implicit dummy: DummyImplicit): Pmf[K] = Pmf(hist.mapValues(f))
+
+  // overriden methods where the Map interface does not consider `This` type
+  override def filterKeys(p: (K) => Boolean): Pmf[K] = filter { kv => p(kv._1) }
 
   /**
    * Gets the probability associated with a given key.
@@ -84,17 +88,16 @@ object Pmf {
   import scala.collection.generic.CanBuildFrom
   import scala.collection.mutable
 
-  implicit def builder[K]: mutable.Builder[(K, Double), Pmf[K]] =
-    new mutable.Builder[(K, Double), Pmf[K]] {
-      var hist = Map.empty[K, Double]
+  def builder[K] = new mutable.Builder[(K, Double), Pmf[K]] {
+    var hist = Map.empty[K, Double]
 
-      def result() = Pmf(hist)
-      def clear() { hist = Map.empty }
-      def +=(elem: (K, Double)) = {
-        hist = hist.updated(elem._1, hist.getOrElse(elem._1, 0.0) + elem._2)
-        this
-      }
+    def result() = Pmf(hist)
+    def clear() { hist = Map.empty }
+    def +=(elem: (K, Double)) = {
+      hist = hist.updated(elem._1, hist.getOrElse(elem._1, 0.0) + elem._2)
+      this
     }
+  }
 
   implicit def canBuildFrom[K]: CanBuildFrom[Pmf[_], (K, Double), Pmf[K]] =
     new CanBuildFrom[Pmf[_], (K, Double), Pmf[K]] {

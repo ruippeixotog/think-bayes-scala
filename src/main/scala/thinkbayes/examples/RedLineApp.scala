@@ -36,15 +36,32 @@ object RedLineApp extends App {
 
   val second = 1.0 / 60.0
 
-  def biasPmf(pmf: Pmf[Double]): Pmf[Double] =
-    pmf.map { case (k, prob) => (k, prob * k) }.normalized
+  def biasPmf(zPmf: Pmf[Double]): Pmf[Double] =
+    zPmf.map { case (k, prob) => (k, prob * k) }.normalized
 
-  def waitTimePmf(biasPmf: Pmf[Double]): Pmf[Double] =
-    biasPmf.mapKeys { k => Pmf(0.0 to k by 10 * second) }.mixture
+  def waitTimePmf(zbPmf: Pmf[Double]): Pmf[Double] =
+    zbPmf.mapKeys { k => Pmf(0.0 to k by 10 * second) }.mixture
 
-  case class WaitTimeCalculator(gapPmf: Pmf[Double]) {
-    val biasedGapPmf = biasPmf(gapPmf)
-    val waitPmf = waitTimePmf(biasedGapPmf)
+  case class WaitTimeCalculator(zPmf: Pmf[Double]) {
+    val zbPmf = biasPmf(zPmf)
+    val xPmf = waitTimePmf(zbPmf)
+    val yPmf = xPmf
+  }
+
+  case class ElapsedTimeEstimator(calc: WaitTimeCalculator,
+                                  lam: Double = 2.0,
+                                  numPasengers: Int = 15) {
+
+    case class Elapsed(pmf: Pmf[Double]) extends Suite[Double, (Double, Int)] {
+      def likelihood(data: (Double, Int), x: Double) = poissionPmf(data._1 * x).prob(data._2)
+    }
+
+    def predictWaitTime(xPmf: Pmf[Double]): Pmf[Double] =
+      (calc.zbPmf -- xPmf).filterKeys(_ >= 0.0).normalized
+
+    val xPriorSuite = Elapsed(calc.xPmf)
+    val xPostSuite = xPriorSuite.observed((lam, numPasengers))
+    val yPmf = predictWaitTime(xPostSuite.pmf)
   }
 
   // ---------
@@ -52,16 +69,26 @@ object RedLineApp extends App {
   println("Plotting the distribution of gap time between trains...")
   val gapChartTitle = "Time between trains"
 
-  val gapPmf = estimatePdf(observedGapTimes).toPmf(0.0 to 20.0 by second)
-  val calc = WaitTimeCalculator(gapPmf)
+  val zPmf = estimatePdf(observedGapTimes).toPmf(0.0 to 20.0 by second)
+  val calc = WaitTimeCalculator(zPmf)
 
-  val gapChart = gapPmf.plotXY("Actual (z)", title = gapChartTitle, xLabel = "Minutes")
-  calc.biasedGapPmf.plotXYOn(gapChart, "As seen by passengers (zb)")
+  val gapChart = zPmf.plotXY("Actual (z)", title = gapChartTitle, xLabel = "Minutes")
+  calc.zbPmf.plotXYOn(gapChart, "As seen by passengers (zb)")
 
   println("Plotting the CDF of gap and wait times...")
   val cdfTimesChartTitle = "CDF of gap and wait times"
 
-  val cdfTimesChart = gapPmf.toCdf.plotXY("Actual gap time (z)")
-  calc.biasedGapPmf.toCdf.plotXYOn(cdfTimesChart, "Biased gap time (zb)")
-  calc.waitPmf.toCdf.plotXYOn(cdfTimesChart, "Wait time (y)")
+  val cdfTimesChart = zPmf.toCdf.plotXY("Actual gap time (z)")
+  calc.zbPmf.toCdf.plotXYOn(cdfTimesChart, "Biased gap time (zb)")
+  calc.xPmf.toCdf.plotXYOn(cdfTimesChart, "Wait time (y)")
+
+  println("Plotting the CDF of wait times after seeing 15 passengers and considering 2 arrivals " +
+    "per minute...")
+  val postWaitChartTitle = "CDF of wait times after seeing 15 passengers, 2 arrivals/min"
+
+  val est = ElapsedTimeEstimator(calc)
+
+  val postWaitChart = est.xPriorSuite.pmf.toCdf.plotXY("Prior x", title = postWaitChartTitle, xLabel = "Minutes")
+  est.xPostSuite.pmf.toCdf.plotXYOn(postWaitChart, "Posterior x")
+  est.yPmf.toCdf.plotXYOn(postWaitChart, "Predicted y")
 }
