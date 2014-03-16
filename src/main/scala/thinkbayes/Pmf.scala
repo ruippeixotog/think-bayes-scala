@@ -57,7 +57,7 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
    */
   def normalized = {
     val sum = values.sum
-    mapValues { prob: Double => prob / sum }
+    if(sum == 0) this else mapValues { prob: Double => prob / sum }
   }
 
   def mapKeys[K2](f: K => K2): Pmf[K2] = map { case (k, prob) => (f(k), prob) }.normalized

@@ -34,13 +34,13 @@ object RedLineApp extends App {
     428.0, 387.0, 901.0, 187.0, 622.0, 616.0, 585.0, 474.0, 442.0, 499.0,
     437.0, 620.0, 351.0, 286.0, 373.0, 232.0, 393.0, 745.0, 636.0, 758.0).map(_ / 60.0)
 
-  val second = 1.0 / 60.0
+  val prec = 10.0 / 60.0
 
   def biasPmf(zPmf: Pmf[Double]): Pmf[Double] =
     zPmf.map { case (k, prob) => (k, prob * k) }.normalized
 
   def waitTimePmf(zbPmf: Pmf[Double]): Pmf[Double] =
-    zbPmf.mapKeys { k => Pmf(0.0 to k by 10 * second) }.mixture
+    zbPmf.mapKeys { k => Pmf(0.0 to k by prec) }.mixture
 
   case class WaitTimeCalculator(zPmf: Pmf[Double]) {
     val zbPmf = biasPmf(zPmf)
@@ -48,20 +48,34 @@ object RedLineApp extends App {
     val yPmf = xPmf
   }
 
+  case class ElapsedTime(pmf: Pmf[Double]) extends Suite[Double, (Double, Int)] {
+    def likelihood(data: (Double, Int), x: Double) = poissionPmf(data._1 * x).prob(data._2)
+  }
+
   case class ElapsedTimeEstimator(calc: WaitTimeCalculator,
                                   lam: Double = 2.0,
                                   numPasengers: Int = 15) {
 
-    case class Elapsed(pmf: Pmf[Double]) extends Suite[Double, (Double, Int)] {
-      def likelihood(data: (Double, Int), x: Double) = poissionPmf(data._1 * x).prob(data._2)
-    }
-
     def predictWaitTime(xPmf: Pmf[Double]): Pmf[Double] =
       (calc.zbPmf -- xPmf).filterKeys(_ >= 0.0).normalized
 
-    val xPriorSuite = Elapsed(calc.xPmf)
+    val xPriorSuite = ElapsedTime(calc.xPmf)
     val xPostSuite = xPriorSuite.observed((lam, numPasengers))
     val yPmf = predictWaitTime(xPostSuite.pmf)
+  }
+
+  val observedArrivalRates = List(
+    (17, 4.6, 9), (22, 1.0, 0), (23, 1.4, 4), (18, 5.4, 12), (4, 5.8, 11))
+
+  case class ArrivalRate(hypos: Seq[Double]) extends Suite[Double, (Double, Int)] {
+    val pmf = Pmf(hypos)
+    def likelihood(data: (Double, Int), lam: Double) = poissionPmf(lam * data._1).prob(data._2)
+  }
+
+  case class ArrivalRateEstimator(data: Seq[(Int, Double, Int)]) {
+
+    val lamPriorSuite = ArrivalRate(0.0 to 5.0 by prec)
+    val lamPostSuite = lamPriorSuite.observedSet(data.map { case (k1, y, k2) => (y, k2) })
   }
 
   // ---------
@@ -69,7 +83,7 @@ object RedLineApp extends App {
   println("Plotting the distribution of gap time between trains...")
   val gapChartTitle = "Time between trains"
 
-  val zPmf = estimatePdf(observedGapTimes).toPmf(0.0 to 20.0 by second)
+  val zPmf = estimatePdf(observedGapTimes).toPmf(0.0 to 20.0 by prec / 2)
   val calc = WaitTimeCalculator(zPmf)
 
   val gapChart = zPmf.plotXY("Actual (z)", title = gapChartTitle, xLabel = "Minutes")
@@ -78,7 +92,9 @@ object RedLineApp extends App {
   println("Plotting the CDF of gap and wait times...")
   val cdfTimesChartTitle = "CDF of gap and wait times"
 
-  val cdfTimesChart = zPmf.toCdf.plotXY("Actual gap time (z)")
+  val cdfTimesChart = zPmf.toCdf.plotXY("Actual gap time (z)",
+    title = cdfTimesChartTitle, xLabel = "Minutes")
+
   calc.zbPmf.toCdf.plotXYOn(cdfTimesChart, "Biased gap time (zb)")
   calc.xPmf.toCdf.plotXYOn(cdfTimesChart, "Wait time (y)")
 
@@ -86,9 +102,33 @@ object RedLineApp extends App {
     "per minute...")
   val postWaitChartTitle = "CDF of wait times after seeing 15 passengers, 2 arrivals/min"
 
-  val est = ElapsedTimeEstimator(calc)
+  val ete = ElapsedTimeEstimator(calc)
 
-  val postWaitChart = est.xPriorSuite.pmf.toCdf.plotXY("Prior x", title = postWaitChartTitle, xLabel = "Minutes")
-  est.xPostSuite.pmf.toCdf.plotXYOn(postWaitChart, "Posterior x")
-  est.yPmf.toCdf.plotXYOn(postWaitChart, "Predicted y")
+  val postWaitChart = ete.xPriorSuite.pmf.toCdf.plotXY("Prior x",
+    title = postWaitChartTitle, xLabel = "Wait time (min)")
+
+  ete.xPostSuite.pmf.toCdf.plotXYOn(postWaitChart, "Posterior x")
+  ete.yPmf.toCdf.plotXYOn(postWaitChart, "Predicted y")
+
+  // ---------
+
+  println("Plotting the distribution of the arrival rate after five days of passenger data...")
+  val arrivalRatesChartTitle = "CDF of arrival rates after five days of passenger data"
+
+  val are = ArrivalRateEstimator(observedArrivalRates)
+
+  val arrivalRatesChart = are.lamPriorSuite.pmf.toCdf.plotXY("Prior λ",
+    title = arrivalRatesChartTitle, xLabel = "Arrival rate (passengers / min)")
+
+  are.lamPostSuite.pmf.toCdf.plotXYOn(arrivalRatesChart, "Posterior λ")
+
+  // ---------
+
+  println("Plotting the predictive distribution of y....")
+  val predWaitChartTitle = "CDF of wait times considering the distribution of λ"
+
+  val yPredPmf = are.lamPostSuite.pmf.mapKeys(ElapsedTimeEstimator(calc, _).yPmf).mixture
+
+  val predWaitChart = yPredPmf.toCdf.plotXY("Mix",
+    title = predWaitChartTitle, xLabel = "Wait time (min)")
 }
