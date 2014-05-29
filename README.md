@@ -44,6 +44,9 @@ A `Pmf` is implemented as an immutable map and can be used as such:
 
   scala> pmf.foldLeft("")(_ + _._1)
   res6: String = abc
+
+  scala> pmf.toList
+  res7: List[(Char, Double)] = List((a,0.2), (b,0.2), (c,0.6))
 ```
 
 Specialized `Pmf` merging methods can model more complex problems in a very concise manner:
@@ -53,10 +56,10 @@ Specialized `Pmf` merging methods can model more complex problems in a very conc
   die: (n: Int)thinkbayes.Pmf[Int]
 
   scala> die(6)
-  res7: thinkbayes.Pmf[Int] = Map(5 -> 0.16666666666666666, 1 -> 0.16666666666666666, 6 -> 0.16666666666666666, 2 -> 0.16666666666666666, 3 -> 0.16666666666666666, 4 -> 0.16666666666666666)
+  res8: thinkbayes.Pmf[Int] = Map(5 -> 0.16666666666666666, 1 -> 0.16666666666666666, 6 -> 0.16666666666666666, 2 -> 0.16666666666666666, 3 -> 0.16666666666666666, 4 -> 0.16666666666666666)
 
   scala> die(6).mean
-  res8: Double = 3.5
+  res9: Double = 3.5
 
   scala> (die(6) ++ die(6)).printChart() // sum of two dices
   2  0.0277 #
