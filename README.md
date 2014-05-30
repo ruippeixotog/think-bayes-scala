@@ -99,3 +99,55 @@ Specialized `Pmf` merging methods can model more complex problems in a very conc
   19 0.0100
   20 0.0100
 ```
+
+### Bayesian suites
+
+The implementation of `Suite` provided in this library does not extend `Pmf`; it is rather provided as a trait which applications can implement to model specific problems:
+
+```
+  scala> case class Dice(hypos: Seq[Int]) extends Suite[Int, Int] { // which dice from `hypos` are we rolling?
+       |   val pmf = Pmf(hypos)
+       |   def likelihood(data: Int, hypo: Int) = if(hypo < data) 0 else 1.0 / hypo
+       | }
+  defined class Dice
+
+  scala> val prior = Dice(List(4, 6, 8, 12, 20))
+  prior: Dice = Dice(List(4, 6, 8, 12, 20))
+
+  scala> prior.printChart()
+  4  0.2    ##########
+  6  0.2    ##########
+  8  0.2    ##########
+  12 0.2    ##########
+  20 0.2    ##########
+
+  scala> val posterior = prior.observed(6) // after a 6 is rolled
+  posterior: thinkbayes.Suite[Int,Int] = thinkbayes.Suite$$anon$1@120fb03e
+
+  scala> posterior.printChart()
+  4  0.0
+  6  0.3921 ###################
+  8  0.2941 ##############
+  12 0.1960 #########
+  20 0.1176 #####
+```
+
+The same prior could be built directly with:
+
+```
+  scala> val prior = Suite[Int, Int](Pmf(List(4, 6, 8, 12, 20))) { (d, h) =>
+       |   if (h < d) 0 else 1.0 / h
+       | }
+  prior: thinkbayes.Suite[Int,Int]{val pmf: thinkbayes.Pmf[Int]} = thinkbayes.Suite$$anon$1@130dd39f
+```
+
+Multiple observations can be given to the `Suite` in bulk, which can yield results more stable numerically:
+
+```
+  scala> posterior.observed(6, 8, 7, 7, 5, 4).printChart()
+  4  0.0
+  6  0.0
+  8  0.9432 ###############################################
+  12 0.0552 ##
+  20 0.0015
+```
