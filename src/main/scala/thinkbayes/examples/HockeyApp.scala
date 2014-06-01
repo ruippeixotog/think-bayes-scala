@@ -18,11 +18,11 @@ object HockeyApp extends App {
   object Hockey extends Suite[Double, Int] {
     val pmf = normalPmf(2.7, 0.3, steps = 100)
 
-    def likelihood(k: Int, lam: Double) = poissionPmf(lam).prob(k)
+    def likelihood(k: Int, lam: Double) = poissonPmf(lam).prob(k)
   }
 
   def numGoalsPmf(goalsPerGamePmf: Pmf[Double]): Pmf[Int] =
-    goalsPerGamePmf.mapKeys(poissionPmf).mixture
+    goalsPerGamePmf.mapKeys(poissonPmf).mixture
 
   def goalTimePmf(goalsPerGamePmf: Pmf[Double]): Pmf[Double] =
     goalsPerGamePmf.mapKeys(exponentialPmf(_, high = 2.0)).mixture

@@ -49,7 +49,7 @@ object RedLineApp extends App {
   }
 
   case class ElapsedTime(pmf: Pmf[Double]) extends Suite[Double, (Double, Int)] {
-    def likelihood(data: (Double, Int), x: Double) = poissionPmf(data._1 * x).prob(data._2)
+    def likelihood(data: (Double, Int), x: Double) = poissonPmf(data._1 * x).prob(data._2)
   }
 
   case class ElapsedTimeEstimator(calc: WaitTimeCalculator,
@@ -69,7 +69,7 @@ object RedLineApp extends App {
 
   case class ArrivalRate(hypos: Seq[Double]) extends Suite[Double, (Double, Int)] {
     val pmf = Pmf(hypos)
-    def likelihood(data: (Double, Int), lam: Double) = poissionPmf(lam * data._1).prob(data._2)
+    def likelihood(data: (Double, Int), lam: Double) = poissonPmf(lam * data._1).prob(data._2)
   }
 
   case class ArrivalRateEstimator(data: Seq[(Int, Double, Int)]) {

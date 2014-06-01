@@ -46,7 +46,7 @@ object Distributions {
     normalPdf(mean, stdev).toPmf(low to high by ((high - low) / steps))
   }
 
-  def poissionPmf(lam: Double): Pmf[Int] = if(lam > 0) new PoissonDistribution(lam) else Pmf.empty
+  def poissonPmf(lam: Double): Pmf[Int] = if(lam > 0) new PoissonDistribution(lam) else Pmf.empty
 
   def exponentialPdf(lam: Double): Pdf = new ExponentialDistribution(1.0 / lam)
 
