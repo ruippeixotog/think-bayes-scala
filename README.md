@@ -247,7 +247,7 @@ This library was designed such that only the core operations needed for the crea
 
 ### Plotting
 
-The `Plotting` object provides support for graphical plotting, leveraging the powerful [JFreeChart](http://www.jfree.org/jfreechart/) library with a custom theme. `Pmf`, `Suite`, `Cdf` and `BoundedPdf` instances can be plotted, as long as their keys have an `Ordering` (for plotting bar charts) or `Numeric` (for plotting XY line charts) implicit in scope:
+The `Plotting` module provides support for graphical plotting, leveraging the powerful [JFreeChart](http://www.jfree.org/jfreechart/) library with a custom theme. `Pmf`, `Suite`, `Cdf` and `BoundedPdf` instances can be plotted, as long as their keys have an `Ordering` (for plotting bar charts) or `Numeric` (for plotting XY line charts) implicit in scope:
 
 ```
   scala> import thinkbayes.extensions.Plotting._
@@ -270,9 +270,41 @@ New series can be added to a previously created chart. This is useful for compar
 
 ```
   scala> posterior.plotBarOn(barChart, "after a 6 is rolled")
-  res29: barChart.type = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
+  res17: barChart.type = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
 ```
 
 ![plotbar_posterior](http://i.imgur.com/7Ak0pQu.png)
 
 Other attributes of the chart, such as the title and the axis labels, can be optionally specified.
+
+### Distributions
+
+The `Distributions` module provides integration with the distribution implementations from [Apache Commons Math](http://commons.apache.org/proper/commons-math/), as well as several methods for creating `Pmf` and `Pdf` instances for common distributions:
+
+```
+  scala> import thinkbayes.extensions.Distributions._
+  import thinkbayes.extensions.Distributions._
+
+  scala> poissonPmf(3.0).plotBar("")
+  res18: scalax.chart.CategoryChart = scalax.chart.ChartFactories$BarChart$$anon$3@6736cd9d
+```
+
+![poisson](http://i.imgur.com/IkDOt6Z.png)
+
+```
+  scala> val tri: Pdf = new org.apache.commons.math3.distribution.TriangularDistribution(0.0, 0.5, 2.0)
+  tri: thinkbayes.Pdf = thinkbayes.extensions.Distributions$$anon$1@7b5cdeb6
+
+  scala> tri.bounded(0.0, 2.0).plotXY("")
+  res19: scalax.chart.XYChart = scalax.chart.ChartFactories$XYLineChart$$anon$17@55a7c8a3
+```
+![triangular](http://i.imgur.com/8WW3cjU.png)
+
+Finally, we can estimate a `Pdf` from a sequence of samples using kernel density estimation:
+
+```
+  scala> estimatePdf(Seq(1, 2, 2, 4, 4, 4, 9, 9, 9, 9, 11, 11, 15, 19)).bounded(0, 20).plotXY("")
+  res20: scalax.chart.XYChart = scalax.chart.ChartFactories$XYLineChart$$anon$17@1c15725
+```
+
+![kde](http://i.imgur.com/ijBYGPg.png)
