@@ -100,6 +100,8 @@ Specialized `Pmf` merging methods can model more complex problems in a very conc
   20 0.0100
 ```
 
+The `Distributions` extension provides methods for creating common `Pmf` such as Gaussian or Poisson distributions.
+
 ### Bayesian suites
 
 The implementation of `Suite` provided in this library does not extend `Pmf`; it is rather provided as a trait which applications can implement to model specific problems:
@@ -151,3 +153,90 @@ Multiple observations can be given to the `Suite` in bulk, which can yield resul
   12 0.0552 ##
   20 0.0015
 ```
+
+### Cumulative distribution functions
+
+A `Cdf` can be created just like a `Pmf`. It supports efficient querying for the cumulative probability on a given value (`prob`) and for the value at a given percentile (`value`):
+
+```
+  scala> val cdf = Cdf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
+  cdf: thinkbayes.Cdf[Char] = Cdf(Vector((a,0.2), (b,0.4), (c,1.0)))
+
+  scala> cdf.prob('b')
+  res10: Double = 0.4
+
+  scala> cdf.value(0.5)
+  res11: Char = c
+
+  scala> cdf.value(0.35)
+  res12: Char = b
+
+  scala> cdf.printChart()
+  a 0.2    ##########
+  b 0.4    ####################
+  c 1.0    ##################################################
+```
+
+Unlike `Pmf`, `Cdf` does not implement the `Map` trait and, therefore, does not inherit the common Scala collection methods. If you need to use those, you can convert easily a `Cdf` to and from a `Pmf`:
+
+```
+  scala> cdf.toPmf
+  res13: thinkbayes.Pmf[Char] = Map(a -> 0.2, b -> 0.2, c -> 0.6)
+
+  scala> cdf.toPmf.toCdf
+  res14: thinkbayes.Cdf[Char] = Cdf(Vector((a,0.2), (b,0.4), (c,1.0)))
+```
+
+### Probability density functions
+
+A `Pdf` can be created from a Scala real-valued function and provides a `density` method for calculating the density at a given value:
+
+```
+  scala> val pdf = Pdf { x => math.max(-x * x + 1, 0) }
+  pdf: thinkbayes.Pdf = thinkbayes.Pdf$$anon$3@744cb6e3
+
+  scala> pdf.density(0)
+  res15: Double = 1.0
+
+  scala> pdf.density(0.5)
+  res16: Double = 0.75
+```
+
+A `BoundedPdf` is a `Pdf` whose domain has known lower and upper bounds.
+
+```
+  scala> val bpdf = Pdf(-1.0, 1.0) { x => math.max(-x * x + 1, 0) }
+  bpdf: thinkbayes.BoundedPdf{val lowerBound: Double; val upperBound: Double} = thinkbayes.Pdf$$anon$2@397820d5
+```
+
+Both can be converted to a `Pmf` given a range or sequence of discrete values to compute. A `BoundedPdf` can alternatively be given a step value only. In both cases, the probabilities of the returned `Pmf` are normalized:
+
+```
+  scala> pdf.toPmf(0.0 to 1.0 by 0.1).printChart()
+  0.0                 0.1398 ######
+  0.1                 0.1384 ######
+  0.2                 0.1342 ######
+  0.30000000000000004 0.1272 ######
+  0.4                 0.1174 #####
+  0.5                 0.1048 #####
+  0.6000000000000001  0.0895 ####
+  0.7000000000000001  0.0713 ###
+  0.8                 0.0503 ##
+  0.9                 0.0265 #
+  1.0                 0.0
+
+  scala> bpdf.toPmf(0.2).printChart()
+  -1.0                 0.0
+  -0.8                 0.0545 ##
+  -0.6                 0.0969 ####
+  -0.3999999999999999  0.1272 ######
+  -0.19999999999999996 0.1454 #######
+  0.0                  0.1515 #######
+  0.20000000000000018  0.1454 #######
+  0.40000000000000013  0.1272 ######
+  0.6000000000000001   0.0969 ####
+  0.8                  0.0545 ##
+  1.0                  0.0
+```
+
+The `Distributions` extension provides methods for creating common `Pdf` such as Gaussian or Exponential distributions.
