@@ -240,3 +240,39 @@ Both can be converted to a `Pmf` given a range or sequence of discrete values to
 ```
 
 The `Distributions` extension provides methods for creating common `Pdf` such as Gaussian or Exponential distributions.
+
+## Extensions
+
+This library was designed such that only the core operations needed for the creation and manipulation of the structures presented above are included in the class themselves. Additional features can be added by importing modules from the package `extensions`.
+
+### Plotting
+
+The `Plotting` object provides support for graphical plotting, leveraging the powerful [JFreeChart](http://www.jfree.org/jfreechart/) library with a custom theme. `Pmf`, `Suite`, `Cdf` and `BoundedPdf` instances can be plotted, as long as their keys have an `Ordering` (for plotting bar charts) or `Numeric` (for plotting XY line charts) implicit in scope:
+
+```
+  scala> import thinkbayes.extensions.Plotting._
+  import thinkbayes.extensions.Plotting._
+
+  scala> val xyChart = bpdf.plotXY("-x^2 + 1")
+  xyChart: scalax.chart.XYChart = scalax.chart.ChartFactories$XYLineChart$$anon$17@290e640d
+```
+
+![plotxy](http://i.imgur.com/rG1d1vj.png)
+
+```
+  scala> val barChart = prior.plotBar("prior")
+  barChart: scalax.chart.CategoryChart = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
+```
+
+![plotbar_prior](http://i.imgur.com/etUUT9a.png)
+
+New series can be added to a previously created chart. This is useful for comparing differences between two distributions or Bayesian suites:
+
+```
+  scala> posterior.plotBarOn(barChart, "after a 6 is rolled")
+  res29: barChart.type = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
+```
+
+![plotbar_posterior](http://i.imgur.com/7Ak0pQu.png)
+
+Other attributes of the chart, such as the title and the axis labels, can be optionally specified.
