@@ -61,7 +61,7 @@ Specialized `Pmf` merging methods can model more complex problems in a very conc
   scala> die(6).mean
   res9: Double = 3.5
 
-  scala> (die(6) ++ die(6)).printChart() // sum of two dices
+  scala> (die(6) ++ die(6)).printChart() // sum of two dice
   2  0.0277 #
   3  0.0555 ##
   4  0.0833 ####
@@ -74,7 +74,7 @@ Specialized `Pmf` merging methods can model more complex problems in a very conc
   11 0.0555 ##
   12 0.0277 #
 
-  scala> val bag = Pmf(List(die(4), die(6), die(8), die(12), die(20))) // a bag containing 5 different dices
+  scala> val bag = Pmf(List(die(4), die(6), die(8), die(12), die(20))) // a bag containing 5 different dice
   bag: thinkbayes.Pmf[thinkbayes.Pmf[Int]] = Map(Map(5 -> 0.08333333333333333, 10 -> 0.08333333333333333, 1 -> 0.08333333333333333, 6 -> 0.08333333333333333, 9 -> ...
 
   scala> bag.mixture.printChart() // roll of a random die from the bag
