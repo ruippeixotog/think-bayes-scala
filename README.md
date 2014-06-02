@@ -308,3 +308,35 @@ Finally, we can estimate a `Pdf` from a sequence of samples using kernel density
 ```
 
 ![kde](http://i.imgur.com/ijBYGPg.png)
+
+### Stats
+
+The `Stats` module is a simple extension that provides the calculation of percentiles and credible intervals to `Pmf` and `Cdf` instances:
+
+```
+  scala> import thinkbayes.extensions.Stats._
+  import thinkbayes.extensions.Stats._
+
+  scala> normalPmf(2.5, 1.5).percentile(0.5)
+  res21: Double = 2.5
+
+  scala> normalPmf(0.0, 1.0).credibleInterval(0.9)
+  res22: (Double, Double) = (-1.6440000000000001,1.6440000000000001)
+```
+
+### Sampling
+
+Using `Pmf` merging methods such as `mixture` or `join` yield results as accurate as they can be, but they are also computationally expensive. The `Sampling` module aims to provide probabilistic alternatives based on sampling, which can be the only choice for large `Pmf`:
+
+```
+  scala> val dieList = Seq.fill(100)(die(6)) // a hundred dice
+  dieList: Seq[thinkbayes.Pmf[Int]] = List(Map(5 -> 0.16666666666666666, 1 -> 0.16666666666666666, 6 -> 0.16666666666666666, 2 -> 0.16666666666666666, 3 -> 0.1666666666666666, 4 -> 0.16666666666666666),...
+
+  scala> val xyChart = dieList.reduce(_ ++ _).plotXY("exact")
+  xyChart: scalax.chart.XYChart = scalax.chart.ChartFactories$XYLineChart$$anon$17@30015846
+
+  scala> sampleSum(dieList, 10000).plotXYOn(xyChart, "sampled")
+  res23: xyChart.type = scalax.chart.ChartFactories$XYLineChart$$anon$17@81f0a53
+```
+
+![sampling](http://i.imgur.com/LiYUyFL.png)
