@@ -1,12 +1,12 @@
 # Think Bayes in Scala
 
-A Scala implementation of the classes and functions used in the great book "Think Bayes" by Allen B. Downey, available for free (and open-source) [here](http://www.greenteapress.com/thinkbayes/).
+A Scala implementation of the classes and functions used in the great book _Think Bayes_ by Allen B. Downey, available for free (and open-source) [here](http://www.greenteapress.com/thinkbayes/).
 
 ## Core classes
 
 ### Probability mass functions
 
-The `Pmf` class is arguably the core collection in Think Bayes, due to the latter's focus on problem solving using discrete approximations instead of continuous mathematics. The way to build a `Pmf` and manipulate it is pretty simple:
+The `Pmf` class is arguably the core collection in _Think Bayes_, due to the latter's focus on problem solving using discrete approximations instead of continuous mathematics. The way to build a `Pmf` and manipulate it is pretty simple:
 
 ```
   scala> import thinkbayes._
@@ -340,3 +340,7 @@ Using `Pmf` merging methods such as `mixture` or `join` yield results as accurat
 ```
 
 ![sampling](http://i.imgur.com/LiYUyFL.png)
+
+## Examples
+
+A number of examples and problems explored throughout _Think Bayes_ are implemented in the package `examples`. They are always accompanied by the original problem description and I made an effort to make the steps of each problem as clear as possible.
