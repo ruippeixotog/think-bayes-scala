@@ -8,7 +8,7 @@ A Scala implementation of the classes and functions used in the great book _Thin
 
 The `Pmf` class is arguably the core collection in _Think Bayes_, due to the latter's focus on problem solving using discrete approximations instead of continuous mathematics. The way to build a `Pmf` and manipulate it is pretty simple:
 
-```
+```scala
   scala> import thinkbayes._
   import thinkbayes._
 
@@ -32,7 +32,7 @@ The `Pmf` class is arguably the core collection in _Think Bayes_, due to the lat
 
 A `Pmf` is implemented as an immutable map and can be used as such:
 
-```
+```scala
   scala> pmf.size
   res3: Int = 3
 
@@ -51,7 +51,7 @@ A `Pmf` is implemented as an immutable map and can be used as such:
 
 Specialized `Pmf` merging methods can model more complex problems in a very concise manner:
 
-```
+```scala
   scala> def die(n: Int) = Pmf(1 to n)
   die: (n: Int)thinkbayes.Pmf[Int]
 
@@ -106,7 +106,7 @@ The `Distributions` extension provides methods for creating common `Pmf` such as
 
 The implementation of `Suite` provided in this library does not extend `Pmf`; it is rather provided as a trait which applications can implement to model specific problems:
 
-```
+```scala
   scala> case class Dice(hypos: Seq[Int]) extends Suite[Int, Int] { // which dice from `hypos` are we rolling?
        |   val pmf = Pmf(hypos)
        |   def likelihood(data: Int, hypo: Int) = if(hypo < data) 0 else 1.0 / hypo
@@ -136,7 +136,7 @@ The implementation of `Suite` provided in this library does not extend `Pmf`; it
 
 The same prior could be built directly with:
 
-```
+```scala
   scala> val prior = Suite[Int, Int](Pmf(List(4, 6, 8, 12, 20))) { (d, h) =>
        |   if (h < d) 0 else 1.0 / h
        | }
@@ -145,7 +145,7 @@ The same prior could be built directly with:
 
 Multiple observations can be given to the `Suite` in bulk, which can yield results more stable numerically:
 
-```
+```scala
   scala> posterior.observed(6, 8, 7, 7, 5, 4).printChart()
   4  0.0
   6  0.0
@@ -158,7 +158,7 @@ Multiple observations can be given to the `Suite` in bulk, which can yield resul
 
 A `Cdf` can be created just like a `Pmf`. It supports efficient querying for the cumulative probability on a given value (`prob`) and for the value at a given percentile (`value`):
 
-```
+```scala
   scala> val cdf = Cdf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
   cdf: thinkbayes.Cdf[Char] = Cdf(Vector((a,0.2), (b,0.4), (c,1.0)))
 
@@ -179,7 +179,7 @@ A `Cdf` can be created just like a `Pmf`. It supports efficient querying for the
 
 Unlike `Pmf`, `Cdf` does not implement the `Map` trait and, therefore, does not inherit the common Scala collection methods. If you need to use those, you can convert easily a `Cdf` to and from a `Pmf`:
 
-```
+```scala
   scala> cdf.toPmf
   res13: thinkbayes.Pmf[Char] = Map(a -> 0.2, b -> 0.2, c -> 0.6)
 
@@ -191,7 +191,7 @@ Unlike `Pmf`, `Cdf` does not implement the `Map` trait and, therefore, does not 
 
 A `Pdf` can be created from a Scala real-valued function and provides a `density` method for calculating the density at a given value:
 
-```
+```scala
   scala> val pdf = Pdf { x => math.max(-x * x + 1, 0) }
   pdf: thinkbayes.Pdf = thinkbayes.Pdf$$anon$3@744cb6e3
 
@@ -204,14 +204,14 @@ A `Pdf` can be created from a Scala real-valued function and provides a `density
 
 A `BoundedPdf` is a `Pdf` whose domain has known lower and upper bounds.
 
-```
+```scala
   scala> val bpdf = Pdf(-1.0, 1.0) { x => math.max(-x * x + 1, 0) }
   bpdf: thinkbayes.BoundedPdf{val lowerBound: Double; val upperBound: Double} = thinkbayes.Pdf$$anon$2@397820d5
 ```
 
 Both can be converted to a `Pmf` given a range or sequence of discrete values to compute. A `BoundedPdf` can alternatively be given a step value only. In both cases, the probabilities of the returned `Pmf` are normalized:
 
-```
+```scala
   scala> pdf.toPmf(0.0 to 1.0 by 0.1).printChart()
   0.0                 0.1398 ######
   0.1                 0.1384 ######
@@ -249,7 +249,7 @@ This library was designed such that only the core operations needed for the crea
 
 The `Plotting` module provides support for graphical plotting, leveraging the powerful [JFreeChart](http://www.jfree.org/jfreechart/) library with a custom theme. `Pmf`, `Suite`, `Cdf` and `BoundedPdf` instances can be plotted, as long as their keys have an `Ordering` (for plotting bar charts) or `Numeric` (for plotting XY line charts) implicit in scope:
 
-```
+```scala
   scala> import thinkbayes.extensions.Plotting._
   import thinkbayes.extensions.Plotting._
 
@@ -259,7 +259,7 @@ The `Plotting` module provides support for graphical plotting, leveraging the po
 
 ![plotxy](http://i.imgur.com/rG1d1vj.png)
 
-```
+```scala
   scala> val barChart = prior.plotBar("prior")
   barChart: scalax.chart.CategoryChart = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
 ```
@@ -268,7 +268,7 @@ The `Plotting` module provides support for graphical plotting, leveraging the po
 
 New series can be added to a previously created chart. This is useful for comparing differences between two distributions or Bayesian suites:
 
-```
+```scala
   scala> posterior.plotBarOn(barChart, "after a 6 is rolled")
   res17: barChart.type = scalax.chart.ChartFactories$BarChart$$anon$3@5c3e1ebe
 ```
@@ -281,7 +281,7 @@ Other attributes of the chart, such as the title and the axis labels, can be opt
 
 The `Distributions` module provides integration with the distribution implementations from [Apache Commons Math](http://commons.apache.org/proper/commons-math/), as well as several methods for creating `Pmf` and `Pdf` instances for common distributions:
 
-```
+```scala
   scala> import thinkbayes.extensions.Distributions._
   import thinkbayes.extensions.Distributions._
 
@@ -291,7 +291,7 @@ The `Distributions` module provides integration with the distribution implementa
 
 ![poisson](http://i.imgur.com/IkDOt6Z.png)
 
-```
+```scala
   scala> val tri: Pdf = new org.apache.commons.math3.distribution.TriangularDistribution(0.0, 0.5, 2.0)
   tri: thinkbayes.Pdf = thinkbayes.extensions.Distributions$$anon$1@7b5cdeb6
 
@@ -302,7 +302,7 @@ The `Distributions` module provides integration with the distribution implementa
 
 Finally, we can estimate a `Pdf` from a sequence of samples using kernel density estimation:
 
-```
+```scala
   scala> estimatePdf(Seq(1, 2, 2, 4, 4, 4, 9, 9, 9, 9, 11, 11, 15, 19)).bounded(0, 20).plotXY("")
   res20: scalax.chart.XYChart = scalax.chart.ChartFactories$XYLineChart$$anon$17@1c15725
 ```
@@ -313,7 +313,7 @@ Finally, we can estimate a `Pdf` from a sequence of samples using kernel density
 
 The `Stats` module is a simple extension that provides the calculation of percentiles and credible intervals to `Pmf` and `Cdf` instances:
 
-```
+```scala
   scala> import thinkbayes.extensions.Stats._
   import thinkbayes.extensions.Stats._
 
@@ -328,7 +328,7 @@ The `Stats` module is a simple extension that provides the calculation of percen
 
 Using `Pmf` merging methods such as `mixture` or `join` yield results as accurate as they can be, but they are also computationally expensive. The `Sampling` module aims to provide probabilistic alternatives based on sampling, which can be the only choice for large `Pmf`:
 
-```
+```scala
   scala> val dieList = Seq.fill(100)(die(6)) // a hundred dice
   dieList: Seq[thinkbayes.Pmf[Int]] = List(Map(5 -> 0.16666666666666666, 1 -> 0.16666666666666666, 6 -> 0.16666666666666666, 2 -> 0.16666666666666666, 3 -> 0.1666666666666666, 4 -> 0.16666666666666666),...
 
