@@ -55,4 +55,6 @@ object Distributions {
     val realHigh = if(high.isPosInfinity) distrib.inverseCumulativeProbability(0.9999) else high
     distrib.toPmf(0.0 to realHigh by (realHigh / steps))
   }
+
+  def binomialPmf(trials: Int, p: Double): Pmf[Int] = new BinomialDistribution(trials, p)
 }
