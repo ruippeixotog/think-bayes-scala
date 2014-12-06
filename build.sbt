@@ -11,6 +11,12 @@ libraryDependencies ++= Seq(
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.11",
   "org.apache.commons"        % "commons-math3" % "3.3")
 
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-language:implicitConversions")
+
 initialCommands in console := """
   import thinkbayes._
   import thinkbayes.examples._
