@@ -16,8 +16,9 @@ import scalax.chart._
 import scalax.chart.api._
 import thinkbayes._
 
-object Plotting {
-  implicit val defaultTheme = darkChartTheme
+trait Plotting {
+  val defaultTheme = darkChartTheme
+  val drawFrame = true
 
   trait Plottable[K] {
     def values: Seq[(K, Double)]
@@ -57,12 +58,14 @@ object Plotting {
     }
 
     private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
-      val frame = chart.toFrame(windowTitle)
-      val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
-      panel.setMaximumDrawWidth(Int.MaxValue)
-      panel.setMaximumDrawHeight(Int.MaxValue)
-      frame.size = dim
-      frame.visible = true
+      if(drawFrame) {
+        val frame = chart.toFrame(windowTitle)
+        val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
+        panel.setMaximumDrawWidth(Int.MaxValue)
+        panel.setMaximumDrawHeight(Int.MaxValue)
+        frame.size = dim
+        frame.visible = true
+      }
     }
   }
 
@@ -167,5 +170,11 @@ object Plotting {
             RectangleInsets.ZERO_INSETS))
       }
     }
+  }
+}
+
+object Plotting extends Plotting {
+  object NoSwing extends Plotting {
+    override val drawFrame = false
   }
 }
