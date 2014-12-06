@@ -23,7 +23,9 @@ trait Plotting {
   trait Plottable[K] {
     def values: Seq[(K, Double)]
 
-    def plotBar(seriesName: String, title: String = "", xLabel: String = "")(implicit ord: K => Ordered[K]): CategoryChart = {
+    def plotBar(seriesName: String, title: String = "", xLabel: String = "")(
+      implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): CategoryChart = {
+
       val chart = BarChart(Seq(seriesName -> values.sorted), title = title)
       chart.plot.domain.axis.label = xLabel
       chart.plot.range.axis.label = "probability"
@@ -32,7 +34,9 @@ trait Plotting {
       chart
     }
 
-    def plotBarOn(chart: CategoryChart, seriesName: String)(implicit ord: K => Ordered[K]): chart.type = {
+    def plotBarOn(chart: CategoryChart, seriesName: String)(
+      implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): chart.type = {
+
       chart.plot.getDataset match {
         case catDataset: DefaultCategoryDataset =>
           values.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
@@ -40,7 +44,9 @@ trait Plotting {
       chart
     }
 
-    def plotXY(seriesName: String, title: String = "", xLabel: String = "")(implicit asNum: Numeric[K]): XYChart = {
+    def plotXY(seriesName: String, title: String = "", xLabel: String = "")(
+      implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): XYChart = {
+
       val chart = XYLineChart(Seq(seriesName -> values), title = title)
       chart.plot.domain.axis.label = xLabel
       chart.plot.range.axis.label = "probability"
@@ -49,7 +55,9 @@ trait Plotting {
       chart
     }
 
-    def plotXYOn(chart: XYChart, seriesName: String)(implicit asNum: Numeric[K]): chart.type = {
+    def plotXYOn(chart: XYChart, seriesName: String)(
+      implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): chart.type = {
+
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
           seriesList.addSeries(values.toXYSeries(seriesName))
