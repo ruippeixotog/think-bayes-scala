@@ -15,15 +15,15 @@ import thinkbayes.extensions.Plotting._
  * closest to the actual price of the showcase, without going over, wins the prizes.
  *
  * Nathaniel went first. His showcase included a dishwasher, a wine cabinet, a laptop computer,
- * and a car. He bid $26,000.
+ * and a car. He bid \$26,000.
  *
  * Letia’s showcase included a pinball machine, a video arcade game, a pool table, and a
- * cruise of the Bahamas. She bid $21,500.
+ * cruise of the Bahamas. She bid \$21,500.
  *
- * The actual price of Nathaniel’s showcase was $25,347. His bid was too high, so he lost.
+ * The actual price of Nathaniel’s showcase was \$25,347. His bid was too high, so he lost.
  *
- * The actual price of Letia’s showcase was $21,578. She was only off by $78, so she won
- * her showcase and, because her bid was off by less than $250, she also won Nathaniel’s
+ * The actual price of Letia’s showcase was \$21,578. She was only off by \$78, so she won
+ * her showcase and, because her bid was off by less than \$250, she also won Nathaniel’s
  * showcase.
  *
  * For a Bayesian thinker, this scenario suggests several questions:
