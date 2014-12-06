@@ -13,7 +13,7 @@ import org.jfree.data.xy.XYSeriesCollection
 import org.jfree.ui.RectangleInsets
 import scala.swing.Swing._
 import scalax.chart._
-import scalax.chart.Charting._
+import scalax.chart.api._
 import thinkbayes._
 
 object Plotting {
@@ -23,10 +23,9 @@ object Plotting {
     def values: Seq[(K, Double)]
 
     def plotBar(seriesName: String, title: String = "", xLabel: String = "")(implicit ord: K => Ordered[K]): CategoryChart = {
-      val categoryData = values.sorted.toIterable.map { case (k, prob) => (k, seriesName, prob) }
-      val chart = BarChart(categoryData.toCategoryDataset, title = title)
-      chart.domainAxisLabel = xLabel
-      chart.rangeAxisLabel = "probability"
+      val chart = BarChart(Seq(seriesName -> values.sorted), title = title)
+      chart.plot.domain.axis.label = xLabel
+      chart.plot.range.axis.label = "probability"
 
       showScalable(chart, title, (1024, 768))
       chart
@@ -40,16 +39,16 @@ object Plotting {
       chart
     }
 
-    def plotXY(seriesName: String, title: String = "", xLabel: String = "")(implicit asNum: K => Number): XYChart = {
-      val chart = XYLineChart(values.toXYSeriesCollection(seriesName), title = title)
-      chart.domainAxisLabel = xLabel
-      chart.rangeAxisLabel = "probability"
+    def plotXY(seriesName: String, title: String = "", xLabel: String = "")(implicit asNum: Numeric[K]): XYChart = {
+      val chart = XYLineChart(Seq(seriesName -> values), title = title)
+      chart.plot.domain.axis.label = xLabel
+      chart.plot.range.axis.label = "probability"
 
       showScalable(chart, title, (1024, 768))
       chart
     }
 
-    def plotXYOn(chart: XYChart, seriesName: String)(implicit asNum: K => Number): chart.type = {
+    def plotXYOn(chart: XYChart, seriesName: String)(implicit asNum: Numeric[K]): chart.type = {
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
           seriesList.addSeries(values.toXYSeries(seriesName))
@@ -57,7 +56,7 @@ object Plotting {
       chart
     }
 
-    private[this] def showScalable(chart: DisplayableChart, windowTitle: String, dim: (Int, Int)) {
+    private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
       val frame = chart.toFrame(windowTitle)
       val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
       panel.setMaximumDrawWidth(Int.MaxValue)
