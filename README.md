@@ -6,7 +6,7 @@ A Scala implementation of the classes and functions used in the great book _Thin
 
 The code in this repository is available as a library and can be used in Scala 2.11.x projects by adding the following dependency to `build.sbt`:
 
-```
+```scala
 libraryDependencies += "net.ruippeixotog" %% "think-bayes" % "0.1"
 ```
 
