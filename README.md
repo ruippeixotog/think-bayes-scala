@@ -2,6 +2,14 @@
 
 A Scala implementation of the classes and functions used in the great book _Think Bayes_ by Allen B. Downey, available for free (and open-source) [here](http://www.greenteapress.com/thinkbayes/).
 
+## Quick start
+
+The code in this repository is available as a library and can be used in Scala 2.11.x projects by adding the following dependency to `build.sbt`:
+
+```
+libraryDependencies += "net.ruippeixotog" %% "think-bayes" % "0.1"
+```
+
 ## Core classes
 
 ### Probability mass functions
