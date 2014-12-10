@@ -343,4 +343,4 @@ Using `Pmf` merging methods such as `mixture` or `join` yield results as accurat
 
 ## Examples
 
-A number of examples and problems explored throughout _Think Bayes_ are implemented in the package `examples`. They are always accompanied by the original problem description and I made an effort to make the steps of each problem as clear as possible.
+A number of examples and problems explored throughout _Think Bayes_ are implemented in the package `examples` in the [test directory](https://github.com/ruippeixotog/think-bayes-scala/tree/master/src/test/scala/thinkbayes/examples). They are always accompanied by the original problem description and I made an effort to make the steps of each problem as clear as possible.
