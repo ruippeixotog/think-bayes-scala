@@ -18,7 +18,7 @@ object DiceApp extends App {
     val pmf = Pmf(hypos)
 
     def likelihood(data: Int, hypo: Int) =
-      if(hypo < data) 0 else 1.0 / hypo
+      if (hypo < data) 0 else 1.0 / hypo
   }
 
   // ---------

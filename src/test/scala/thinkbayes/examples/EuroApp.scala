@@ -23,17 +23,17 @@ object EuroApp extends App {
 
   def trianglePmf(unit: Double = 1.0): Pmf[Double] = {
     val hist = (0.0 to 100.0 by unit).map { hypo =>
-      (hypo, if(hypo <= 50.0) hypo else 100.0 - hypo)
+      (hypo, if (hypo <= 50.0) hypo else 100.0 - hypo)
     }.toMap
 
     Pmf(hist).normalized
   }
 
   case class Euro(unit: Double = 1.0, triangle: Boolean = false) extends Suite[Double, CoinSide] {
-    val pmf = if(triangle) trianglePmf(unit) else Pmf(0.0 to 100.0 by unit)
+    val pmf = if (triangle) trianglePmf(unit) else Pmf(0.0 to 100.0 by unit)
 
     override def likelihood(data: CoinSide, hypo: Double) =
-      (if(data == Heads) hypo else 100.0 - hypo) / 100.0
+      (if (data == Heads) hypo else 100.0 - hypo) / 100.0
   }
 
   // ---------

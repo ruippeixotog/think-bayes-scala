@@ -9,12 +9,12 @@ class Beta(var alpha: Double = 1.0, var beta: Double = 1.0) extends BoundedPdf {
   def lowerBound: Double = 1.0
 
   def update(data: Boolean) {
-    if(data) alpha += 1.0 else beta += 1.0
+    if (data) alpha += 1.0 else beta += 1.0
   }
 
   def updateSet(dataset: TraversableOnce[Boolean]) {
     val (trues, falses) = dataset.foldLeft((0, 0)) {
-      case ((t, f), data) => if(data) (t + 1, f) else (t, f + 1)
+      case ((t, f), data) => if (data) (t + 1, f) else (t, f + 1)
     }
     alpha += trues
     beta += falses

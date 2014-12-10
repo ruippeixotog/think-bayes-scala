@@ -16,7 +16,7 @@ object LocomotiveApp extends App {
     val pmf = Pmf(hypos.map { hypo => (hypo, math.pow(hypo, -alpha)) }.toMap).normalized
 
     def likelihood(data: Int, hypo: Int) =
-      if(hypo < data) 0 else 1.0 / hypo
+      if (hypo < data) 0 else 1.0 / hypo
   }
 
   // ---------

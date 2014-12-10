@@ -1,3 +1,5 @@
+import scalariform.formatter.preferences._
+
 name := "think-bayes"
 
 organization := "net.ruippeixotog"
@@ -10,6 +12,11 @@ libraryDependencies ++= Seq(
   "com.github.wookietreiber" %% "scala-chart"   % "0.4.2",
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.11",
   "org.apache.commons"        % "commons-math3" % "3.3")
+
+scalariformSettings
+
+ScalariformKeys.preferences := ScalariformKeys.preferences.value.
+  setPreference(AlignParameters, true)
 
 scalacOptions ++= Seq(
   "-deprecation",

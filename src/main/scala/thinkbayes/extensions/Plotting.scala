@@ -66,7 +66,7 @@ trait Plotting {
     }
 
     private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
-      if(drawFrame) {
+      if (drawFrame) {
         val frame = chart.toFrame(windowTitle)
         val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
         panel.setMaximumDrawWidth(Int.MaxValue)

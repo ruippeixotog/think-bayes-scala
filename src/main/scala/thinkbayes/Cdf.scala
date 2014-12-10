@@ -27,14 +27,14 @@ case class Cdf[K: Ordering](vals: IndexedSeq[(K, Double)]) {
   private[this] def searchBy[A, V <% Ordered[V]](xs: IndexedSeq[A], target: V, f: A => V): Either[A, Int] = {
     def bs(target: V, start: Int, end: Int): Either[A, Int] = {
       if (start == end) {
-        if(start == xs.length || f(xs(start)) > target) Right(start)
+        if (start == xs.length || f(xs(start)) > target) Right(start)
         else Right(start + 1)
       } else {
         val mid = (end + start) / 2
         val midVal = f(xs(mid))
 
         if (midVal == target) Left(xs(mid))
-        else if(midVal > target) bs(target, start, mid)
+        else if (midVal > target) bs(target, start, mid)
         else bs(target, mid + 1, end)
       }
     }

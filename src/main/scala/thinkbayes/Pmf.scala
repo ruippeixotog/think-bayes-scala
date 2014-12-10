@@ -47,7 +47,7 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
   def random(): K = {
     def get(rand: Double, it: Iterator[(K, Double)]): K = {
       val (k, prob) = it.next()
-      if(rand < prob) k else get(rand - prob, it)
+      if (rand < prob) k else get(rand - prob, it)
     }
     get(Random.nextDouble() * values.sum, iterator)
   }
@@ -57,16 +57,15 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
    */
   def normalized = {
     val sum = values.sum
-    if(sum == 0) this else mapValues { prob: Double => prob / sum }
+    if (sum == 0) this else mapValues { prob: Double => prob / sum }
   }
 
   def mapKeys[K2](f: K => K2): Pmf[K2] = map { case (k, prob) => (f(k), prob) }.normalized
 
   def join[J](other: Pmf[K], comb: (K, K) => J): Pmf[J] = {
-    foldLeft(Pmf.empty[J]) { case (acc, (k, prob)) =>
-      other.foldLeft(acc) { case (acc2, (k2, prob2)) =>
-        acc2 + (comb(k, k2), prob * prob2)
-      }
+    foldLeft(Pmf.empty[J]) {
+      case (acc, (k, prob)) =>
+        other.foldLeft(acc) { case (acc2, (k2, prob2)) => acc2 + (comb(k, k2), prob * prob2) }
     }.normalized
   }
 
@@ -74,10 +73,9 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
   def --(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.minus)
 
   def mixture[K2](implicit ev: K <:< Pmf[K2]): Pmf[K2] = {
-    foldLeft(Pmf.empty[K2]) { case (acc, (outcome, weight)) =>
-      outcome.foldLeft(acc) { case (acc2, (k, prob)) =>
-        acc2 + (k, weight * prob)
-      }
+    foldLeft(Pmf.empty[K2]) {
+      case (acc, (outcome, weight)) =>
+        outcome.foldLeft(acc) { case (acc2, (k, prob)) => acc2 + (k, weight * prob) }
     }.normalized
   }
 

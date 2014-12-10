@@ -70,12 +70,12 @@ object PriceIsRightApp extends App {
     def probWin(diff: Int): Double = opponent.probOverbid + opponent.probWorseThan(diff)
 
     def gain(bid: Int, price: Int): Double =
-      if(bid > price) 0
+      if (bid > price) 0
       else {
         val diff = price - bid
         val prob = probWin(diff)
 
-        if(diff <= 250) 2 * price * prob
+        if (diff <= 250) 2 * price * prob
         else price * prob
       }
 
