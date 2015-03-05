@@ -26,7 +26,6 @@ scalacOptions ++= Seq(
 
 initialCommands in console := """
   import thinkbayes._
-  import thinkbayes.examples._
   import thinkbayes.extensions.Plotting._"""
 
 publishTo <<= version { v =>

@@ -20,23 +20,24 @@ trait Plotting {
   val defaultTheme = darkChartTheme
   val drawFrame = true
 
+  implicit def mapAsPlottable[K](map: Map[K, Double]) = new Plottable[K] { def values = map.toSeq }
+  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] { def values = suite.pmf.toSeq }
+  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { def values = cdf.vals }
+  implicit def boundedPdfAsPlottable[K](pdf: BoundedPdf) = new Plottable[Double] {
+    def values = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
+      map { k => (k, pdf.density(k)) }
+  }
+
   trait Plottable[K] {
     def values: Seq[(K, Double)]
 
     def plotBar(seriesName: String, title: String = "", xLabel: String = "")(
       implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): CategoryChart = {
 
-      val chart = BarChart(Seq(seriesName -> values.sorted), title = title)
-      chart.plot.domain.axis.label = xLabel
-      chart.plot.range.axis.label = "probability"
-
-      showScalable(chart, title, (1024, 768))
-      chart
+      plotBarOn(emptyPlotBar(title, xLabel), seriesName)
     }
 
-    def plotBarOn(chart: CategoryChart, seriesName: String)(
-      implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): chart.type = {
-
+    def plotBarOn(chart: CategoryChart, seriesName: String)(implicit ord: K => Ordered[K]): chart.type = {
       chart.plot.getDataset match {
         case catDataset: DefaultCategoryDataset =>
           values.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
@@ -47,42 +48,45 @@ trait Plotting {
     def plotXY(seriesName: String, title: String = "", xLabel: String = "")(
       implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): XYChart = {
 
-      val chart = XYLineChart(Seq(seriesName -> values), title = title)
-      chart.plot.domain.axis.label = xLabel
-      chart.plot.range.axis.label = "probability"
-
-      showScalable(chart, title, (1024, 768))
-      chart
+      plotXYOn(emptyPlotXY(title, xLabel), seriesName)
     }
 
-    def plotXYOn(chart: XYChart, seriesName: String)(
-      implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): chart.type = {
-
+    def plotXYOn(chart: XYChart, seriesName: String)(implicit asNum: Numeric[K]): chart.type = {
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
           seriesList.addSeries(values.toXYSeries(seriesName))
       }
       chart
     }
-
-    private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
-      if (drawFrame) {
-        val frame = chart.toFrame(windowTitle)
-        val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
-        panel.setMaximumDrawWidth(Int.MaxValue)
-        panel.setMaximumDrawHeight(Int.MaxValue)
-        frame.size = dim
-        frame.visible = true
-      }
-    }
   }
 
-  implicit def mapAsPlottable[K](map: Map[K, Double]) = new Plottable[K] { def values = map.toSeq }
-  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] { def values = suite.pmf.toSeq }
-  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { def values = cdf.vals }
-  implicit def boundedPdfAsPlottable[K](pdf: BoundedPdf) = new Plottable[Double] {
-    def values = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
-      map { k => (k, pdf.density(k)) }
+  def emptyPlotBar(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): CategoryChart = {
+    val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
+    chart.plot.domain.axis.label = xLabel
+    chart.plot.range.axis.label = "probability"
+
+    showScalable(chart, title, (1024, 768))
+    chart
+  }
+
+  def emptyPlotXY(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): XYChart = {
+    val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
+    chart.plot.domain.axis.label = xLabel
+    chart.plot.range.axis.label = "probability"
+
+    showScalable(chart, title, (1024, 768))
+    chart
+  }
+
+  private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
+    if (drawFrame) {
+      val frame = chart.toFrame(windowTitle)
+      val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
+      panel.setMaximumDrawWidth(Int.MaxValue)
+      panel.setMaximumDrawHeight(Int.MaxValue)
+      frame.size = dim
+      frame.visible = true
+    }
   }
 
   object ThinkBayesChartTheme {
