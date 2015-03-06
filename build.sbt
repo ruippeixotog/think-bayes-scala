@@ -6,12 +6,12 @@ organization := "net.ruippeixotog"
 
 version := "0.2-SNAPSHOT"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
   "com.github.wookietreiber" %% "scala-chart"   % "0.4.2",
-  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.11",
-  "org.apache.commons"        % "commons-math3" % "3.3")
+  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.12",
+  "org.apache.commons"        % "commons-math3" % "3.4.1")
 
 scalariformSettings
 
