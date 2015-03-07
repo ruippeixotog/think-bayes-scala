@@ -14,8 +14,8 @@ trait Suite[H, D] {
 
   /**
    * Updates each hypothesis based on the given data.
-   * Modifies the suite directly; if you want to keep the original, make a copy.
    * @param data the representation of the data to use to update the suite
+   * @return a new [[Suite]] with the updated hypotheses.
    */
   def observed(data: D): Suite[H, D] = {
     val newPmf = pmf.map { case (h, prob) => (h, prob * likelihood(data, h)) }.normalized
@@ -25,11 +25,11 @@ trait Suite[H, D] {
   def observed(dataset: D*): Suite[H, D] = observedSet(dataset)
 
   /**
-   * Updates each hypothesis based on the dataset.
+   * Updates each hypothesis based on the given dataset.
    * This is more efficient than calling `update` repeatedly because it waits until the end to
    * `normalize`.
-   * Modifies the suite directly; if you want to keep the original, make a copy.
    * @param dataset a sequence of data values to use to update the suite
+   * @return a new [[Suite]] with the updated hypotheses.
    */
   def observedSet(dataset: TraversableOnce[D]): Suite[H, D] = {
     val newPmf = dataset.foldLeft(pmf) { (acc, data) =>
