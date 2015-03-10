@@ -37,6 +37,8 @@ case class Pmf[K](hist: Map[K, Double]) extends Map[K, Double] with MapLike[K, D
    */
   def maxProb: (K, Double) = maxBy(_._2)
 
+  def mode: K = maxBy(_._2)._1
+
   /**
    * Computes the mean of the PMF.
    * @return the mean of the PMF.
