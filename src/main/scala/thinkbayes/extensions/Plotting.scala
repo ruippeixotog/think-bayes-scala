@@ -100,18 +100,23 @@ trait Plotting {
       new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
 
     final val DarkSeriesColors = Array[Paint](
-      new Color(160, 255, 160, 128),
-      new Color(255, 160, 160, 128),
-      new Color(160, 160, 255, 128))
+      new Color(119, 152, 191),
+      new Color(144, 238, 126),
+      new Color(173, 109, 221),
+      new Color(85, 191, 59),
+      new Color(43, 144, 143),
+      new Color(244, 91, 91)
+    )
 
-    final val DarkSeriesStrokes = LightSeriesStrokes
+    final val DarkSeriesStrokes = Array[Stroke](
+      new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
   }
 
   class ThinkBayesChartTheme(name: String) extends StandardChartTheme(name, false) {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    setExtraLargeFont(new Font("Helvetica Neue", Font.BOLD, 20))
-    setLargeFont(new Font("Helvetica Neue", Font.BOLD, 14))
+    setExtraLargeFont(new Font("Helvetica Neue", Font.PLAIN, 16))
+    setLargeFont(new Font("Helvetica Neue", Font.PLAIN, 12))
     setRegularFont(new Font("Helvetica Neue", Font.PLAIN, 12))
     setSmallFont(new Font("Helvetica Neue", Font.PLAIN, 10))
 
@@ -148,22 +153,25 @@ trait Plotting {
   }
 
   lazy val darkChartTheme: ChartTheme = new ThinkBayesChartTheme("think-bayes-dark") {
+    val lighterGrey = new Color(180, 180, 180)
+    val lightGrey = new Color(149, 149, 149)
+    val darkGrey = new Color(41, 41, 42)
 
-    setTitlePaint(Color.white)
-    setSubtitlePaint(Color.white)
+    setTitlePaint(Color.WHITE)
+    setSubtitlePaint(lightGrey)
 
-    setChartBackgroundPaint(new Color(31, 32, 27))
-    setPlotBackgroundPaint(new Color(31, 32, 27))
+    setChartBackgroundPaint(darkGrey)
+    setPlotBackgroundPaint(darkGrey)
 
-    setDomainGridlinePaint(Color.white)
-    setRangeGridlinePaint(Color.white)
+    setDomainGridlinePaint(lightGrey)
+    setRangeGridlinePaint(lightGrey)
 
-    setLegendBackgroundPaint(new Color(31, 32, 27))
-    setLegendItemPaint(Color.white)
+    setLegendBackgroundPaint(darkGrey)
+    setLegendItemPaint(lightGrey)
     setLabelLinkPaint(new Color(0, 0, 0, 0))
-
-    setAxisLabelPaint(Color.white)
-    setTickLabelPaint(Color.white)
+    
+    setAxisLabelPaint(new Color(0, 0, 0, 0))
+    setTickLabelPaint(lighterGrey)
 
     setDrawingSupplier(new DefaultDrawingSupplier(
       ThinkBayesChartTheme.DarkSeriesColors,
