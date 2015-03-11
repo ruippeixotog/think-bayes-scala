@@ -8,10 +8,13 @@ version := "0.2-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
+resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+
 libraryDependencies ++= Seq(
   "com.github.wookietreiber" %% "scala-chart"   % "0.4.2",
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.12",
-  "org.apache.commons"        % "commons-math3" % "3.4.1")
+  "org.apache.commons"        % "commons-math3" % "3.4.1",
+  "org.specs2"               %% "specs2-core"   % "3.0.1"    % "test")
 
 scalariformSettings
 
