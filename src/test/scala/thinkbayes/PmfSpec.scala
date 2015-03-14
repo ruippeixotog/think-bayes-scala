@@ -1,13 +1,8 @@
 package thinkbayes
 
-import org.specs2.matcher.Matcher
 import org.specs2.mutable.Specification
 
-class PmfSpec extends Specification {
-
-  def beCloseTo[K](otherPmf: Pmf[K]): Matcher[Pmf[K]] = { pmf: Pmf[K] =>
-    foreach(pmf.iterator) { case (k, prob) => pmf.prob(k) must beCloseTo(prob, 0.00001) }
-  }
+class PmfSpec extends Specification with PmfMatchers {
 
   "A Pmf" should {
 
@@ -84,7 +79,7 @@ class PmfSpec extends Specification {
       pmf.toSet ==== Set('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
     }
 
-    "allow being combined with another by summing or subtracing the latter" in {
+    "allow being summed or subtracted by another when their outcomes are numeric" in {
       val d6 = Pmf(1 to 6)
       d6 ++ d6 must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield i + j))
       d6 -- d6 must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield i - j))
@@ -92,15 +87,23 @@ class PmfSpec extends Specification {
     }
 
     "allow being combined with another using a custom join function" in {
-      todo
+      val d6 = Pmf(1 to 6)
+      d6.join(d6, math.max) must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield math.max(i, j)))
+
+      val coin = Pmf('H' -> 0.4, 'T' -> 0.6)
+      coin.join(coin, _.toString + _) must beCloseTo(Pmf("HH" -> 0.16, "HT" -> 0.24, "TH" -> 0.24, "TT" -> 0.36))
     }
 
     "allow being flattened (mixtured) if its keys are also Pmfs" in {
-      todo
+      def die(n: Int) = Pmf(1 to n)
+      val bag = Pmf(Seq(die(4), die(6))) // a bag containing 2 different dice
+
+      bag.mixture must beCloseTo(Pmf((1 to 4) ++ (1 to 6))) // roll of a random die from the bag
     }
 
     "allow being converted into a Cdf" in {
-      todo
+      val pmf = Pmf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
+      pmf.toCdf === Cdf(Vector('a' -> 0.2, 'b' -> 0.4, 'c' -> 1.0))
     }
   }
 }
