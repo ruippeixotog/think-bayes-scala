@@ -83,7 +83,6 @@ class PmfSpec extends Specification with PmfMatchers {
       val d6 = Pmf(1 to 6)
       d6 ++ d6 must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield i + j))
       d6 -- d6 must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield i - j))
-      d6 ++ d6 -- d6 must beCloseTo(d6)
     }
 
     "allow being combined with another using a custom join function" in {
@@ -98,7 +97,8 @@ class PmfSpec extends Specification with PmfMatchers {
       def die(n: Int) = Pmf(1 to n)
       val bag = Pmf(Seq(die(4), die(6))) // a bag containing 2 different dice
 
-      bag.mixture must beCloseTo(Pmf((1 to 4) ++ (1 to 6))) // roll of a random die from the bag
+      val expectedMix = Pmf((for { dieN <- List(4, 6); i <- 1 to dieN } yield i -> 0.5 / dieN): _*)
+      bag.mixture must beCloseTo(expectedMix) // roll of a random die from the bag
     }
 
     "allow being converted into a Cdf" in {
