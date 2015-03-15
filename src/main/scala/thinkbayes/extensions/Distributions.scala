@@ -42,5 +42,7 @@ object Distributions extends CommonsMathConversions {
   def binomialPmf(trials: Int, p: Double): Pmf[Int] = new BinomialDistribution(rndGen, trials, p)
 
   def hypergeometricPmf(popSize: Int, successCount: Int, sampleSize: Int): Pmf[Int] =
-    new HypergeometricDistribution(rndGen, popSize, successCount, sampleSize)
+    if (sampleSize == 0) Pmf(0 -> 1.0)
+    else if (popSize == successCount) Pmf(sampleSize -> 1.0)
+    else new HypergeometricDistribution(rndGen, popSize, successCount, sampleSize)
 }
