@@ -25,7 +25,8 @@ scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
-  "-language:implicitConversions")
+  "-language:implicitConversions",
+  "-language:higherKinds")
 
 initialCommands in console := """
   import thinkbayes._
