@@ -52,6 +52,7 @@ class DistributionsSpec extends Specification with PmfMatchers {
       hypergeometricPmf(100, 100, 0) must beCloseTo(Pmf(0 -> 1.0))
       hypergeometricPmf(100, 50, 100) must beCloseTo(Pmf(50 -> 1.0))
       hypergeometricPmf(100, 0, 50) must beCloseTo(Pmf(0 -> 1.0))
+      hypergeometricPmf(100, 0, 1) must beCloseTo(Pmf(0 -> 1.0))
       hypergeometricPmf(100, 0, 0) must beCloseTo(Pmf(0 -> 1.0))
       hypergeometricPmf(0, 0, 0) must beCloseTo(Pmf(0 -> 1.0))
     }
