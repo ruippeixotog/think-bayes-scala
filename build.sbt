@@ -4,7 +4,7 @@ name := "think-bayes"
 
 organization := "net.ruippeixotog"
 
-version := "0.2-SNAPSHOT"
+version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
