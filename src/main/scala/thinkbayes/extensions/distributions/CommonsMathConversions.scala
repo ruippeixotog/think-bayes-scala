@@ -33,27 +33,19 @@ object CommonsMathConversions {
       if (distrib.getSupportUpperBound != Int.MaxValue) distrib.getSupportUpperBound
       else distrib.inverseCumulativeProbability(1.0 - epsilon)
 
-    def +[B1 >: Double](kv: (Int, B1)): Map[Int, B1] = toMap + kv
+    def +(kv: (Int, Double))(implicit dummy: DummyImplicit): Pmf[Int] = toHistogramPmf + kv
     def -(key: Int): Pmf[Int] = toHistogramPmf - key
-
     def get(key: Int) = Some(distrib.probability(key))
     def iterator = (lowerBound to upperBound).iterator.map { key => (key, distrib.probability(key)) }
-
-    def +(kv: (Int, Double))(implicit dummy: DummyImplicit): Pmf[Int] = toHistogramPmf + kv
-    def mapValues(f: (Double) => Double)(implicit dummy: DummyImplicit): Pmf[Int] = toHistogramPmf.mapValues(f)
 
     @inline private[this] def toHistogramPmf: Pmf[Int] = Pmf(iterator.toSeq: _*)
   }
 
   case class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double]) extends Pmf[Double] {
-    def +[B1 >: Double](kv: (Double, B1)): Map[Double, B1] = toMap + kv
+    def +(kv: (Double, Double))(implicit dummy: DummyImplicit): Pmf[Double] = toHistogramPmf + kv
     def -(key: Double): Pmf[Double] = toHistogramPmf - key
-
     def get(key: Double) = Some(distrib.probability(key))
     def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
-
-    def +(kv: (Double, Double))(implicit dummy: DummyImplicit): Pmf[Double] = toHistogramPmf + kv
-    def mapValues(f: (Double) => Double)(implicit dummy: DummyImplicit): Pmf[Double] = toHistogramPmf.mapValues(f)
 
     @inline private[this] def toHistogramPmf: Pmf[Double] = Pmf(iterator.toSeq: _*)
   }

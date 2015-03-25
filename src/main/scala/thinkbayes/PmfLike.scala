@@ -12,6 +12,8 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
   // overloaded methods to deal with the fact that a Pmf has a fixed value type
   def +(kv: (K, Double))(implicit dummy: DummyImplicit): Pmf[K]
 
+  def +[B1 >: Double](kv: (K, B1)): Map[K, B1] = Map() ++ iterator + kv
+
   /**
    * Gets the probability associated with a given key.
    * @param key the key whose probability is to be returned
@@ -46,7 +48,11 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
 
   def mapKeys[K2](f: K => K2): Pmf[K2] = map { case (k, prob) => (f(k), prob) }.normalized
 
-  def mapValues(f: Double => Double)(implicit dummy: DummyImplicit): Pmf[K]
+  def mapValues(f: Double => Double)(implicit dummy: DummyImplicit): Pmf[K] = {
+    val b = newBuilder
+    b ++= iterator.map { kv => (kv._1, f(kv._2)) }
+    b.result()
+  }
 
   override def filterKeys(p: K => Boolean): Pmf[K] = filter { kv => p(kv._1) }
 
