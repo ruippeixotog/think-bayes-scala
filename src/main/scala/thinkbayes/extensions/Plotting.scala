@@ -51,12 +51,25 @@ trait Plotting {
       plotXYOn(emptyPlotXY(title, xLabel), seriesName)
     }
 
-    def plotXYOn(chart: XYChart, seriesName: String)(implicit asNum: Numeric[K]): chart.type = {
+    def plotXYOn[A <: XYChart](chart: A, seriesName: String)(implicit asNum: Numeric[K]): A = {
+      plotXYWithSeriesOn(chart, seriesName)._1
+    }
+
+    def plotXYWithSeriesOn[A <: XYChart](chart: A, seriesName: String, series: XYSeries = null)(implicit asNum: Numeric[K]): (A, XYSeries) = {
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
-          seriesList.addSeries(values.toXYSeries(seriesName))
+          if (series == null) {
+            val newSeries = values.toXYSeries(seriesName)
+            seriesList.addSeries(newSeries)
+            (chart, newSeries)
+          } else {
+            series.clear()
+            series.setKey(seriesName)
+            values.foreach { case (x, y) => series.add(asNum.toDouble(x), y.toDouble) }
+            (chart, series)
+          }
+        case _ => (chart, null)
       }
-      chart
     }
   }
 
@@ -169,7 +182,7 @@ trait Plotting {
     setLegendBackgroundPaint(darkGrey)
     setLegendItemPaint(lightGrey)
     setLabelLinkPaint(new Color(0, 0, 0, 0))
-    
+
     setAxisLabelPaint(new Color(0, 0, 0, 0))
     setTickLabelPaint(lighterGrey)
 
