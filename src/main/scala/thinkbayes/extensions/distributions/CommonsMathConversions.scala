@@ -6,7 +6,8 @@ import CommonsMathConversions._
 
 trait CommonsMathConversions {
 
-  implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] = IntegerDistributionPmf(distrib)
+  implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] =
+    new IntegerDistributionPmf(distrib)
 
   implicit def realDistributionAsPdf(distrib: RealDistribution): Pdf = {
     if (!distrib.getSupportLowerBound.isNegInfinity && distrib.getSupportUpperBound.isPosInfinity) {
@@ -24,7 +25,7 @@ trait CommonsMathConversions {
 object CommonsMathConversions {
   val epsilon = 0.0001
 
-  case class IntegerDistributionPmf(distrib: IntegerDistribution) extends Pmf[Int] {
+  class IntegerDistributionPmf(distrib: IntegerDistribution) extends Pmf[Int] {
 
     private[this] lazy val lowerBound =
       if (distrib.getSupportLowerBound != Int.MinValue) distrib.getSupportLowerBound
@@ -41,7 +42,7 @@ object CommonsMathConversions {
     @inline private[this] def toHistogramPmf: Pmf[Int] = Pmf(iterator.toSeq: _*)
   }
 
-  case class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double]) extends Pmf[Double] {
+  class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double]) extends Pmf[Double] {
     def +(kv: (Double, Double))(implicit dummy: DummyImplicit): Pmf[Double] = toHistogramPmf + kv
     def -(key: Double): Pmf[Double] = toHistogramPmf - key
     def get(key: Double) = Some(distrib.probability(key))
@@ -60,7 +61,7 @@ object CommonsMathConversions {
         if (!distrib.getSupportUpperBound.isPosInfinity) distrib.getSupportUpperBound
         else distrib.inverseCumulativeProbability(1.0 - epsilon)
 
-      RealDistributionPmf(distrib, lowerBound to upperBound by ((upperBound - lowerBound) / steps))
+      new RealDistributionPmf(distrib, lowerBound to upperBound by ((upperBound - lowerBound) / steps))
     }
   }
 }
