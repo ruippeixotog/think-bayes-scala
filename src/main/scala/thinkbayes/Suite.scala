@@ -19,7 +19,7 @@ trait Suite[H, D] {
    */
   def observed(data: D): Suite[H, D] = {
     val newPmf = pmf.map { case (h, prob) => (h, prob * likelihood(data, h)) }.normalized
-    Suite(newPmf)(likelihood)
+    updatedPmf(newPmf)
   }
 
   def observed(dataset: D*): Suite[H, D] = observedSet(dataset)
@@ -36,14 +36,22 @@ trait Suite[H, D] {
       acc.map { case (h, prob) => (h, prob * likelihood(data, h)) }
     }.normalized
 
-    Suite(newPmf)(likelihood)
+    updatedPmf(newPmf)
   }
+
+  /**
+   * Returns a new `Suite` with an updated `Pmf`.
+   * @param newPmf the `Pmf` of the `Suite` to be returned
+   * @return a new `Suite` with an updated `Pmf`.
+   */
+  def updatedPmf(newPmf: Pmf[H]): Suite[H, D] = Suite(newPmf)(likelihood)
 }
 
 object Suite {
 
-  def apply[H, D](distr: Pmf[H])(likelihoodFunc: (D, H) => Double) = new Suite[H, D] {
+  def apply[H, D](distr: Pmf[H])(likelihoodFunc: (D, H) => Double): Suite[H, D] = new Suite[H, D] {
     val pmf = distr
     def likelihood(data: D, hypo: H) = likelihoodFunc(data, hypo)
+    override def updatedPmf(newPmf: Pmf[H]) = Suite(newPmf)(likelihoodFunc)
   }
 }
