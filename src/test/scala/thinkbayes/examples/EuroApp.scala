@@ -57,14 +57,14 @@ object EuroApp extends App {
   println("Posterior distribution stats with uniform prior:")
   println("Hypothesis with highest probability: " + unifPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + unifPosterior.pmf.mean)
-  println("Median of the distribution: " + unifPosterior.pmf.percentile(0.5))
+  println("Median of the distribution: " + unifPosterior.pmf.quantile(0.5))
   println("90%% credible interval: " + unifPosterior.pmf.credibleInterval(0.9))
 
   println()
   println("Posterior distribution stats with triangle prior:")
   println("Hypothesis with highest probability: " + triPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + triPosterior.pmf.mean)
-  println("Median of the distribution: " + triPosterior.pmf.percentile(0.5))
+  println("Median of the distribution: " + triPosterior.pmf.quantile(0.5))
   println("90%% credible interval: " + triPosterior.pmf.credibleInterval(0.9))
 
   println()
