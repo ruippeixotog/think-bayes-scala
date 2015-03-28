@@ -57,6 +57,18 @@ class DistributionsSpec extends Specification with PmfMatchers {
       hypergeometricPmf(0, 0, 0) must beCloseTo(Pmf(0 -> 1.0))
     }
 
+    "provide a way to create bounded Pdfs for beta distributions" in {
+      val epsilon = 0.00001
+
+      betaPdf(3.5, 4.7).lowerBound === 0.0
+      betaPdf(6.8, 10.1).upperBound === 1.0
+      forall(0.0 to 1.0 by 0.1) { p => betaPdf(1.0, 1.0).density(p) === 1.0 }
+      forall(0.0 to 1.0 by 0.1) { p => betaPdf(2.0, 1.0).density(p) must beCloseTo(2 * p, epsilon) }
+      forall(0.0 to 1.0 by 0.1) { p => betaPdf(1.0, 2.0).density(p) must beCloseTo(2 * (1 - p), epsilon) }
+      betaPdf(9.4, 2.3).density(0.45) must beCloseTo(172.285 * math.pow(0.45, 8.4) * math.pow(0.55, 1.3), epsilon)
+      betaPdf(9.4, 2.3).density(0.78) must beCloseTo(172.285 * math.pow(0.78, 8.4) * math.pow(0.22, 1.3), epsilon)
+    }
+
     "provide a way to estimate a Pdf from a sequence of samples" in {
       todo
     }

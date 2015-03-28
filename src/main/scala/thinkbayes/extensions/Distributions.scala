@@ -45,4 +45,15 @@ object Distributions extends CommonsMathConversions {
     if (sampleSize == 0 || successCount == 0) Pmf(0 -> 1.0)
     else if (popSize == successCount) Pmf(sampleSize -> 1.0)
     else new HypergeometricDistribution(rndGen, popSize, successCount, sampleSize)
+
+  def betaPdf(alpha: Double, beta: Double): BoundedPdf = {
+    val distrib = new BetaDistribution(alpha, beta)
+
+    if (alpha < 1.0 || beta < 1.0) Pdf(0.0, 1.0)(distrib.density)
+    else Pdf(0.0, 1.0) { x =>
+      if (x == 0.0) { if (alpha == 1.0) beta else 0.0 }
+      else if (x == 1.0) { if (beta == 1.0) alpha else 0.0 }
+      else distrib.density(x)
+    }
+  }
 }
