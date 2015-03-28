@@ -38,13 +38,15 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
   def mean(implicit num: Numeric[K]): Double =
     iterator.map { case (h, prob) => num.toDouble(h) * prob }.sum
 
-  def random(): K = {
+  def sample(): K = {
     def get(rand: Double, it: Iterator[(K, Double)]): K = {
       val (k, prob) = it.next()
       if (rand < prob) k else get(rand - prob, it)
     }
     get(Random.nextDouble() * values.sum, iterator)
   }
+
+  @inline final def random() = sample()
 
   def mapKeys[K2](f: K => K2): Pmf[K2] = map { case (k, prob) => (f(k), prob) }.normalized
 
