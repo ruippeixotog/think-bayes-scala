@@ -11,6 +11,8 @@ case class HistogramPmf[K](hist: Map[K, Double]) extends Pmf[K] {
 
   override def mapValues(f: Double => Double)(implicit dummy: DummyImplicit) = HistogramPmf(hist.mapValues(f))
   override def +[B1 >: Double](kv: (K, B1)) = hist + kv
+
+  override def toHistogramPmf: Pmf[K] = this
 }
 
 object HistogramPmf {

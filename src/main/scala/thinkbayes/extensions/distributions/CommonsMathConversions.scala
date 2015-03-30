@@ -31,25 +31,19 @@ object CommonsMathConversions {
     if (!distrib.getSupportUpperBound.isPosInfinity) distrib.getSupportUpperBound
     else distrib.inverseCumulativeProbability(1.0 - defaultCutoff)
 
-  class IntegerDistributionPmf(distrib: IntegerDistribution) extends Pmf[Int] {
+  class IntegerDistributionPmf(distrib: IntegerDistribution) extends Pmf[Int] with ClosedFormPmf[Int] {
     private[this] lazy val lowerBound = approximateIntegerLowerBound(distrib)
     private[this] lazy val upperBound = approximateIntegerUpperBound(distrib)
 
-    def +(kv: (Int, Double))(implicit dummy: DummyImplicit): Pmf[Int] = toHistogramPmf + kv
-    def -(key: Int): Pmf[Int] = toHistogramPmf - key
     def get(key: Int) = Some(distrib.probability(key))
     def iterator = (lowerBound to upperBound).iterator.map { key => (key, distrib.probability(key)) }
-
-    @inline private[this] def toHistogramPmf: Pmf[Int] = Pmf(iterator.toSeq: _*)
   }
 
-  class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double]) extends Pmf[Double] {
-    def +(kv: (Double, Double))(implicit dummy: DummyImplicit): Pmf[Double] = toHistogramPmf + kv
-    def -(key: Double): Pmf[Double] = toHistogramPmf - key
+  class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double])
+      extends Pmf[Double] with ClosedFormPmf[Double] {
+
     def get(key: Double) = Some(distrib.probability(key))
     def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
-
-    @inline private[this] def toHistogramPmf: Pmf[Double] = Pmf(iterator.toSeq: _*)
   }
 
   object RealDistributionPmf {

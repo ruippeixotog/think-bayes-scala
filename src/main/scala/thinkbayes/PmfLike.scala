@@ -83,6 +83,7 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
     }.normalized
   }
 
+  def toHistogramPmf: Pmf[K] = Pmf(iterator.toSeq: _*)
   def toCdf(implicit ord: Ordering[K]): Cdf[K] = Cdf(toSeq: _*)
 
   override def stringPrefix = "Pmf"
