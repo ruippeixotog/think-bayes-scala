@@ -69,6 +69,24 @@ class DistributionsSpec extends Specification with PmfMatchers {
       betaPdf(9.4, 2.3).density(0.78) must beCloseTo(172.285 * math.pow(0.78, 8.4) * math.pow(0.22, 1.3), epsilon)
     }
 
+    "provide a way to create Pmfs for beta-binomial distributions" in {
+      val epsilon = 0.00001
+
+      forall(0 to 100 by 10) { t =>
+        betaBinomialPmf(t, 4.56, 7.54).keySet === (0 to t).toSet
+        betaBinomialPmf(t, 1.0, 1.0).prob(t) must beCloseTo(1.0 / (t + 1), epsilon)
+      }
+
+      forall(1.0 to 5.0 by 0.5) { a =>
+        forall(1.0 to 5.0 by 0.5) { b => betaBinomialPmf(1, a, b).prob(0) must beCloseTo(b / (a + b), epsilon) }
+      }
+
+      betaBinomialPmf(18, 16.9, 9.4).prob(13) must beCloseTo(0.13846457651739186, epsilon)
+      betaBinomialPmf(48, 12.8, 23.7).prob(29) must beCloseTo(0.004926859420972929, epsilon)
+      betaBinomialPmf(48, 12.8, 23.7).prob(17) must beCloseTo(0.07817877873188939, epsilon)
+      betaBinomialPmf(8, 27.6, 18.1).prob(3) must beCloseTo(0.12456374434810324, epsilon)
+    }
+
     "provide a way to estimate a Pdf from a sequence of samples" in {
       todo
     }

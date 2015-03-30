@@ -3,7 +3,7 @@ package thinkbayes.extensions
 import org.apache.commons.math3.distribution._
 import org.apache.commons.math3.random.Well19937c
 import thinkbayes._
-import thinkbayes.extensions.distributions.CommonsMathConversions
+import thinkbayes.extensions.distributions._
 import thinkbayes.extensions.distributions.CommonsMathConversions._
 import weka.estimators.KernelEstimator
 
@@ -59,4 +59,6 @@ object Distributions extends CommonsMathConversions {
       else distrib.density(x)
     }
   }
+
+  def betaBinomialPmf(trials: Int, alpha: Double, beta: Double) = new BetaBinomialPmf(trials, alpha, beta)
 }
