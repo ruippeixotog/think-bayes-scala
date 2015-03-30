@@ -48,7 +48,7 @@ class PmfSpec extends Specification with PmfMatchers {
     "allow taking random samples from it" in {
       val nRuns = 10000
       val pmf = Pmf(0 -> 0.4, 1 -> 0.6)
-      val samplePmf = Pmf(Iterator.fill(nRuns)(pmf.random()))
+      val samplePmf = Pmf(Iterator.fill(nRuns)(pmf.sample()))
 
       // Warning: this test will fail approximately one every billion runs.
       // You can check the failure probability using this very library:
