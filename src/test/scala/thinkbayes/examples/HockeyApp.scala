@@ -25,7 +25,7 @@ object HockeyApp extends App {
     goalsPerGamePmf.mapKeys(poissonPmf).mixture
 
   def goalTimePmf(goalsPerGamePmf: Pmf[Double]): Pmf[Double] =
-    goalsPerGamePmf.mapKeys(exponentialPmf(_, high = 2.0)).mixture
+    goalsPerGamePmf.mapKeys(exponentialPmf(_, absCutoff = 2.0)).mixture
 
   // ---------
 

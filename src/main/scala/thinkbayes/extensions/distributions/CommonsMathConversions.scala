@@ -1,38 +1,39 @@
 package thinkbayes.extensions.distributions
 
-import org.apache.commons.math3.distribution.{ RealDistribution, IntegerDistribution }
-import thinkbayes.{ BoundedPdf, Pdf, Pmf }
-import CommonsMathConversions._
+import org.apache.commons.math3.distribution.{ IntegerDistribution, RealDistribution }
+import thinkbayes.extensions.distributions.CommonsMathConversions._
+import thinkbayes._
 
 trait CommonsMathConversions {
 
   implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] =
     new IntegerDistributionPmf(distrib)
 
-  implicit def realDistributionAsPdf(distrib: RealDistribution): Pdf = {
-    if (!distrib.getSupportLowerBound.isNegInfinity && distrib.getSupportUpperBound.isPosInfinity) {
-      new BoundedPdf {
-        def density(x: Double) = distrib.density(x)
-        def lowerBound = distrib.getSupportUpperBound
-        def upperBound = distrib.getSupportLowerBound
-      }
-    } else new Pdf {
-      def density(x: Double) = distrib.density(x)
-    }
-  }
+  implicit def realDistributionAsPdf(distrib: RealDistribution): Pdf = Pdf(distrib.density)
 }
 
 object CommonsMathConversions {
-  val epsilon = 0.0001
+  val defaultCutoff = 0.0001
+
+  def approximateIntegerLowerBound(distrib: IntegerDistribution, cutoff: Double = defaultCutoff) =
+    if (distrib.getSupportLowerBound != Int.MinValue) distrib.getSupportLowerBound
+    else distrib.inverseCumulativeProbability(defaultCutoff)
+
+  def approximateIntegerUpperBound(distrib: IntegerDistribution, cutoff: Double = defaultCutoff) =
+    if (distrib.getSupportUpperBound != Int.MaxValue) distrib.getSupportUpperBound
+    else distrib.inverseCumulativeProbability(1.0 - defaultCutoff)
+
+  def approximateRealLowerBound(distrib: RealDistribution, cutoff: Double = defaultCutoff) =
+    if (!distrib.getSupportLowerBound.isNegInfinity) distrib.getSupportLowerBound
+    else distrib.inverseCumulativeProbability(defaultCutoff)
+
+  def approximateRealUpperBound(distrib: RealDistribution, cutoff: Double = defaultCutoff) =
+    if (!distrib.getSupportUpperBound.isPosInfinity) distrib.getSupportUpperBound
+    else distrib.inverseCumulativeProbability(1.0 - defaultCutoff)
 
   class IntegerDistributionPmf(distrib: IntegerDistribution) extends Pmf[Int] {
-
-    private[this] lazy val lowerBound =
-      if (distrib.getSupportLowerBound != Int.MinValue) distrib.getSupportLowerBound
-      else distrib.inverseCumulativeProbability(epsilon)
-    private[this] lazy val upperBound =
-      if (distrib.getSupportUpperBound != Int.MaxValue) distrib.getSupportUpperBound
-      else distrib.inverseCumulativeProbability(1.0 - epsilon)
+    private[this] lazy val lowerBound = approximateIntegerLowerBound(distrib)
+    private[this] lazy val upperBound = approximateIntegerUpperBound(distrib)
 
     def +(kv: (Int, Double))(implicit dummy: DummyImplicit): Pmf[Int] = toHistogramPmf + kv
     def -(key: Int): Pmf[Int] = toHistogramPmf - key
@@ -52,15 +53,9 @@ object CommonsMathConversions {
   }
 
   object RealDistributionPmf {
-    def apply(distrib: RealDistribution, steps: Int, stringRepr: String): RealDistributionPmf = {
-      val lowerBound =
-        if (!distrib.getSupportLowerBound.isNegInfinity) distrib.getSupportLowerBound
-        else distrib.inverseCumulativeProbability(epsilon)
-
-      val upperBound =
-        if (!distrib.getSupportUpperBound.isPosInfinity) distrib.getSupportUpperBound
-        else distrib.inverseCumulativeProbability(1.0 - epsilon)
-
+    def apply(distrib: RealDistribution, steps: Int): RealDistributionPmf = {
+      val lowerBound = approximateRealLowerBound(distrib)
+      val upperBound = approximateRealUpperBound(distrib)
       new RealDistributionPmf(distrib, lowerBound to upperBound by ((upperBound - lowerBound) / steps))
     }
   }
