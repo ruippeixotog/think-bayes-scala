@@ -22,7 +22,7 @@ object Distributions extends CommonsMathConversions {
   def normalPmf(mean: Double, stdev: Double, numSigmas: Double = 4.0, steps: Int = 2000): Pmf[Double] = {
     val low = mean - numSigmas * stdev
     val high = mean + numSigmas * stdev
-    RealDistributionPmf(new NormalDistribution(rndGen, mean, stdev), low to high by ((high - low) / steps))
+    new RealDistributionPmf(new NormalDistribution(rndGen, mean, stdev), low to high by ((high - low) / steps))
   }
 
   def poissonPmf(lam: Double): Pmf[Int] =
@@ -38,7 +38,7 @@ object Distributions extends CommonsMathConversions {
 
     val distrib = new ExponentialDistribution(rndGen, 1.0 / lam)
     val high = if (absCutoff.isPosInfinity) approximateRealUpperBound(distrib, cutoff) else absCutoff
-    RealDistributionPmf(distrib, 0.0 to high by (high / steps))
+    new RealDistributionPmf(distrib, 0.0 to high by (high / steps))
   }
 
   def binomialPmf(trials: Int, p: Double): Pmf[Int] = new BinomialDistribution(rndGen, trials, p)

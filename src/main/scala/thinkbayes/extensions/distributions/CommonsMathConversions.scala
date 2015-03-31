@@ -5,7 +5,7 @@ import thinkbayes.extensions.distributions.CommonsMathConversions._
 import thinkbayes._
 
 trait CommonsMathConversions {
-  implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] = IntegerDistributionPmf(distrib)
+  implicit def integerDistributionAsPmf(distrib: IntegerDistribution): Pmf[Int] = new IntegerDistributionPmf(distrib)
   implicit def realDistributionAsPdf(distrib: RealDistribution): Pdf = Pdf(distrib.density)
 }
 
@@ -36,11 +36,8 @@ object CommonsMathConversions {
 
     def get(key: Int) = Some(distrib.probability(key))
     def iterator = (lowerBound to upperBound).iterator.map { key => (key, distrib.probability(key)) }
-  }
 
-  object IntegerDistributionPmf {
-    def apply(distrib: IntegerDistribution, cutoff: Double = defaultCutoff) =
-      new IntegerDistributionPmf(distrib, cutoff)
+    override def toCdf(implicit ord: Ordering[Int]) = new IntegerDistributionCdf(distrib, cutoff)
   }
 
   class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double])
@@ -48,16 +45,34 @@ object CommonsMathConversions {
 
     def get(key: Double) = Some(distrib.probability(key))
     def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
+
+    override def toCdf(implicit ord: Ordering[Double]) = new RealDistributionCdf(distrib, domain)
   }
 
   object RealDistributionPmf {
-    def apply(distrib: RealDistribution, domain: Seq[Double]): RealDistributionPmf =
-      new RealDistributionPmf(distrib, domain)
-
     def apply(distrib: RealDistribution, steps: Int, cutoff: Double = defaultCutoff): RealDistributionPmf = {
       val lowerBound = approximateRealLowerBound(distrib, cutoff)
       val upperBound = approximateRealUpperBound(distrib, cutoff)
       new RealDistributionPmf(distrib, lowerBound to upperBound by ((upperBound - lowerBound) / steps))
     }
+  }
+
+  class IntegerDistributionCdf(distrib: IntegerDistribution, cutoff: Double = defaultCutoff) extends Cdf[Int] {
+    private[this] lazy val lowerBound = approximateIntegerLowerBound(distrib, cutoff)
+    private[this] lazy val upperBound = approximateIntegerUpperBound(distrib, cutoff)
+
+    def prob(key: Int): Double = distrib.cumulativeProbability(key)
+    def value(prob: Double): Int = distrib.inverseCumulativeProbability(prob)
+    def iterator = (lowerBound to upperBound).iterator.map { key => (key, distrib.cumulativeProbability(key)) }
+
+    override def toPmf = new IntegerDistributionPmf(distrib, cutoff)
+  }
+
+  class RealDistributionCdf(distrib: RealDistribution, domain: Seq[Double]) extends Cdf[Double] {
+    def prob(key: Double): Double = distrib.cumulativeProbability(key)
+    def value(prob: Double): Double = distrib.inverseCumulativeProbability(prob)
+    def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
+
+    override def toPmf = new RealDistributionPmf(distrib, domain)
   }
 }
