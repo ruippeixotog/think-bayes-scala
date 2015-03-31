@@ -103,7 +103,8 @@ class PmfSpec extends Specification with PmfMatchers {
 
     "allow being converted into a Cdf" in {
       val pmf = Pmf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
-      pmf.toCdf === Cdf(Vector('a' -> 0.2, 'b' -> 0.4, 'c' -> 1.0))
+      pmf.toCdf === Cdf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
+      pmf.toCdf.iterator.toSeq === Seq('a' -> 0.2, 'b' -> 0.4, 'c' -> 1.0)
     }
   }
 }
