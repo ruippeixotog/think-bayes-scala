@@ -8,7 +8,11 @@ import scala.collection.mutable
 abstract class PmfFactory[CC[K] <: Pmf[K] with PmfLike[K, CC[K]]] {
   type Coll = CC[_]
 
-  def apply[K](elems: (K, Double)*): CC[K] = (newBuilder[K] ++= elems).result()
+  def apply[K](ps: (K, Double)*): CC[K] = (newBuilder[K] ++= ps).result()
+
+  def apply[K](ps: Map[K, Double]): CC[K] = (newBuilder[K] ++= ps).result()
+
+  def apply[K](keys: TraversableOnce[K]): CC[K] = (newBuilder[K] ++= keys.map(_ -> 1.0)).result().normalized
 
   def newBuilder[K]: mutable.Builder[(K, Double), CC[K]] = new PmfBuilder[K, CC[K]](empty[K])
 

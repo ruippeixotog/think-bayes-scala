@@ -3,6 +3,7 @@ package thinkbayes
 import thinkbayes.PmfFactory.PmfBuilder
 
 import scala.collection.MapLike
+import scala.collection.generic.CanBuildFrom
 import scala.util.Random
 
 trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Double, This] {
@@ -77,7 +78,8 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @tparam K2 the type of the resulting outcomes
    * @return a new `Pmf` with every outcome of this `Pmf` transformed.
    */
-  def mapKeys[K2](f: K => K2): Pmf[K2] = map { case (k, prob) => (f(k), prob) }
+  def mapKeys[K2, That](f: K => K2)(implicit bf: CanBuildFrom[This, (K2, Double), That]): That =
+    map { case (k, prob) => (f(k), prob) }
 
   /**
    * Transforms this `Pmf` by applying a function to every probability. This method does _not_ normalize the `Pmf`
@@ -86,19 +88,19 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @param f the function used to transform the outcomes of this `Pmf`
    * @return a new `Pmf` with the probability of every outcome of this `Pmf` transformed.
    */
-  def mapValues(f: Double => Double)(implicit dummy: DummyImplicit): Pmf[K] = {
+  def mapValues(f: Double => Double)(implicit dummy: DummyImplicit): This = {
     val b = newBuilder
     b ++= iterator.map { kv => (kv._1, f(kv._2)) }
     b.result()
   }
 
-  override def filterKeys(p: K => Boolean): Pmf[K] = filter { kv => p(kv._1) }
+  override def filterKeys(p: K => Boolean): This = filter { kv => p(kv._1) }
 
   /**
    * Normalizes this `Pmf` so the probabilities of all outcomes sum to 1.0.
    * @return a new `Pmf` with its probabilities normalized.
    */
-  def normalized: Pmf[K] = {
+  def normalized: This = {
     val sum = values.sum
     if (sum == 0.0 || sum == 1.0) repr else mapValues { prob: Double => prob / sum }
   }
@@ -115,11 +117,11 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @tparam J the type of the resulting outcomes
    * @return a new `Pmf` resultant from combining this `Pmf` and `other` using the function `comb`
    */
-  def join[J](other: Pmf[K], comb: (K, K) => J): Pmf[J] = {
-    foldLeft(Pmf.empty[J]) {
-      case (acc, (k, prob)) =>
-        other.foldLeft(acc) { case (acc2, (k2, prob2)) => acc2 + (comb(k, k2), prob * prob2) }
-    }.normalized
+  def join[J, That](other: Pmf[K], comb: (K, K) => J): Pmf[J] = {
+    val b = Pmf.newBuilder[J]
+    for ((k, prob) <- this; (k2, prob2) <- other)
+      b += (comb(k, k2) -> prob * prob2)
+    b.result().normalized
   }
 
   /**
@@ -150,19 +152,21 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @return the mixture distribution that results from the combination of the `Pmf` outcomes.
    */
   def mixture[K2](implicit ev: K <:< Pmf[K2]): Pmf[K2] = {
-    foldLeft(Pmf.empty[K2]) {
-      case (acc, (outcome, weight)) =>
-        outcome.foldLeft(acc) { case (acc2, (k, prob)) => acc2 + (k, weight * prob) }
-    }.normalized
+    val b = Pmf.newBuilder[K2]
+    for ((outcome, weight) <- this; (k, prob) <- outcome)
+      b += (k -> weight * prob)
+    b.result().normalized
   }
 
   /**
-   * Returns a copy of this `Pmf` that is an instance of `HistogramPmf`. This method can be used to force the
+   * Returns a copy of this `Pmf` that is an instance of `CategoricalPmf`. This method can be used to force the
    * calculation of the probabilities of lazy `Pmf` instances or to convert `Pmf`s whose probabilities are described as
-   * a closed-form expression into an enumeration of all outcomes and its probabilities.
-   * @return a copy of this `Pmf` that is an instance of `HistogramPmf`.
+   * a closed-form expression into an enumeration of all outcomes and its probabilities (a
+   * [[http://en.wikipedia.org/wiki/Categorical_distribution categorical distribution]]).
+   *
+   * @return a copy of this `Pmf` that is an instance of `CategoricalPmf`.
    */
-  def toHistogramPmf: Pmf[K] = Pmf(iterator.toSeq: _*)
+  def toCategoricalPmf: CategoricalPmf[K] = CategoricalPmf(iterator.toSeq: _*)
 
   /**
    * Returns a `Cdf` that represents this distribution.

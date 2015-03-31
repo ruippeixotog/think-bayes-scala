@@ -66,7 +66,7 @@ class PmfSpec extends Specification with PmfMatchers {
     "provide Map-like methods that keep the Pmf original type when applicable" in {
       val pmf = Pmf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
 
-      (pmf - 'a').normalized must beCloseTo(Pmf('b' -> 0.2, 'c' -> 0.6))
+      (pmf - 'a').normalized must beCloseTo(Pmf('b' -> 0.25, 'c' -> 0.75))
       (pmf + ('d' -> 1.0)).normalized must beCloseTo(Pmf('a' -> 0.1, 'b' -> 0.1, 'c' -> 0.3, 'd' -> 0.5))
 
       pmf.map { case (k, v) => ((k + 1).toChar, v) } ==== Pmf('b' -> 0.2, 'c' -> 0.2, 'd' -> 0.6)
@@ -74,7 +74,7 @@ class PmfSpec extends Specification with PmfMatchers {
       pmf.mapKeys { k => (k + 1).toChar } ==== Pmf('b' -> 0.2, 'c' -> 0.2, 'd' -> 0.6)
 
       pmf.filter(_._1 == 'a').normalized ==== Pmf('a' -> 1.0)
-      pmf.filterKeys(_ != 'a').normalized must beCloseTo(Pmf('b' -> 0.2, 'c' -> 0.6))
+      pmf.filterKeys(_ != 'a').normalized must beCloseTo(Pmf('b' -> 0.25, 'c' -> 0.75))
 
       pmf.toSet ==== Set('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
     }
