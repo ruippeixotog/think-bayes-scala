@@ -1,6 +1,10 @@
 .idea
 .idea_modules
 *.iml
+
+.ensime
+.ensime_cache
+
 target/
 *.sc
 
