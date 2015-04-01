@@ -37,6 +37,7 @@ object CommonsMathConversions {
     def get(key: Int) = Some(distrib.probability(key))
     def iterator = (lowerBound to upperBound).iterator.map { key => (key, distrib.probability(key)) }
 
+    override def mean(implicit num: Numeric[Int]): Double = distrib.getNumericalMean
     override def toCdf(implicit ord: Ordering[Int]) = new IntegerDistributionCdf(distrib, cutoff)
   }
 

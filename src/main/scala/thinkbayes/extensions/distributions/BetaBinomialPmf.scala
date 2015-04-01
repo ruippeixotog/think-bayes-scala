@@ -21,4 +21,6 @@ class BetaBinomialPmf(trials: Int, alpha: Double, beta: Double) extends Pmf[Int]
 
   def get(key: Int) = if (key < 0 || key > trials) None else Some(p(key))
   def iterator = Iterator.tabulate(trials + 1) { key => (key, p(key)) }
+
+  override def mean(implicit num: Numeric[Int]) = trials * alpha / (alpha + beta)
 }
