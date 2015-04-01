@@ -4,7 +4,7 @@ name := "think-bayes"
 
 organization := "net.ruippeixotog"
 
-version := "0.2-SNAPSHOT"
+version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   "com.github.wookietreiber" %% "scala-chart"   % "0.4.2",
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.12",
   "org.apache.commons"        % "commons-math3" % "3.4.1",
-  "org.specs2"               %% "specs2-core"   % "3.0.1"    % "test")
+  "org.specs2"               %% "specs2-core"   % "3.2"      % "test")
 
 scalariformSettings
 
@@ -25,7 +25,8 @@ scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
-  "-language:implicitConversions")
+  "-language:implicitConversions",
+  "-language:higherKinds")
 
 initialCommands in console := """
   import thinkbayes._

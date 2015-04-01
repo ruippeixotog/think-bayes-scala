@@ -1,9 +1,9 @@
 package thinkbayes.examples
 
 import thinkbayes._
+import thinkbayes.extensions.Distributions._
 import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
-import thinkbayes.utils.Beta
 
 /**
  * Application for solving the Euro problem (page 29):
@@ -32,8 +32,24 @@ object EuroApp extends App {
   case class Euro(unit: Double = 1.0, triangle: Boolean = false) extends Suite[Double, CoinSide] {
     val pmf = if (triangle) trianglePmf(unit) else Pmf(0.0 to 100.0 by unit)
 
-    override def likelihood(data: CoinSide, hypo: Double) =
-      (if (data == Heads) hypo else 100.0 - hypo) / 100.0
+    def likelihood(data: CoinSide, hypo: Double) = (if (data == Heads) hypo else 100.0 - hypo) / 100.0
+  }
+
+  case class EuroConjugate(alpha: Double = 1.0, beta: Double = 1.0) extends Suite[Double, CoinSide] {
+    def pmf = betaPdf(alpha, beta).toPmf(0.0 to 1.0 by 0.0005)
+
+    def likelihood(data: CoinSide, hypo: Double) = ???
+
+    override def observed(data: CoinSide) =
+      if (data == Heads) EuroConjugate(alpha + 1.0, beta)
+      else EuroConjugate(alpha, beta + 1.0)
+
+    override def observedSet(dataset: TraversableOnce[CoinSide]) = observedSet(dataset.foldLeft((0, 0)) {
+      case ((t, f), data) => if (data == Heads) (t + 1, f) else (t, f + 1)
+    })
+
+    def observedSet(dataCounts: (Int, Int)): Suite[Double, CoinSide] =
+      EuroConjugate(alpha + dataCounts._1, beta + dataCounts._2)
   }
 
   // ---------
@@ -57,19 +73,19 @@ object EuroApp extends App {
   println("Posterior distribution stats with uniform prior:")
   println("Hypothesis with highest probability: " + unifPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + unifPosterior.pmf.mean)
-  println("Median of the distribution: " + unifPosterior.pmf.percentile(0.5))
+  println("Median of the distribution: " + unifPosterior.pmf.quantile(0.5))
   println("90%% credible interval: " + unifPosterior.pmf.credibleInterval(0.9))
 
   println()
   println("Posterior distribution stats with triangle prior:")
   println("Hypothesis with highest probability: " + triPosterior.pmf.maxProb._1)
   println("Mean of the distribution: " + triPosterior.pmf.mean)
-  println("Median of the distribution: " + triPosterior.pmf.percentile(0.5))
+  println("Median of the distribution: " + triPosterior.pmf.quantile(0.5))
   println("90%% credible interval: " + triPosterior.pmf.credibleInterval(0.9))
 
   println()
   println("Plotting posterior using a beta distribution...")
-  val beta = new Beta()
-  beta.updateSet(140, 110)
-  beta.toPmf().plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
+  val conjPrior = EuroConjugate()
+  val conjPosterior = conjPrior.observedSet(140, 110)
+  conjPosterior.plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
 }

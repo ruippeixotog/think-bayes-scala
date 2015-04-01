@@ -7,7 +7,7 @@ import thinkbayes.Pmf
 object Sampling {
 
   def randomJoin[K, J](pmfs: TraversableOnce[Pmf[K]], join: TraversableOnce[K] => J): J =
-    join(pmfs.map(_.random()))
+    join(pmfs.map(_.sample()))
 
   def sampleJoin[K, J](pmfs: TraversableOnce[Pmf[K]], n: Int, join: TraversableOnce[K] => J) =
     Pmf(Seq.fill(n)(randomJoin(pmfs, join)))

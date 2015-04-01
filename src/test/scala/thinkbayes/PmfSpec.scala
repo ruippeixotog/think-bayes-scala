@@ -48,7 +48,7 @@ class PmfSpec extends Specification with PmfMatchers {
     "allow taking random samples from it" in {
       val nRuns = 10000
       val pmf = Pmf(0 -> 0.4, 1 -> 0.6)
-      val samplePmf = Pmf(Iterator.fill(nRuns)(pmf.random()))
+      val samplePmf = Pmf(Iterator.fill(nRuns)(pmf.sample()))
 
       // Warning: this test will fail approximately one every billion runs.
       // You can check the failure probability using this very library:
@@ -66,7 +66,7 @@ class PmfSpec extends Specification with PmfMatchers {
     "provide Map-like methods that keep the Pmf original type when applicable" in {
       val pmf = Pmf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
 
-      (pmf - 'a').normalized must beCloseTo(Pmf('b' -> 0.2, 'c' -> 0.6))
+      (pmf - 'a').normalized must beCloseTo(Pmf('b' -> 0.25, 'c' -> 0.75))
       (pmf + ('d' -> 1.0)).normalized must beCloseTo(Pmf('a' -> 0.1, 'b' -> 0.1, 'c' -> 0.3, 'd' -> 0.5))
 
       pmf.map { case (k, v) => ((k + 1).toChar, v) } ==== Pmf('b' -> 0.2, 'c' -> 0.2, 'd' -> 0.6)
@@ -74,7 +74,7 @@ class PmfSpec extends Specification with PmfMatchers {
       pmf.mapKeys { k => (k + 1).toChar } ==== Pmf('b' -> 0.2, 'c' -> 0.2, 'd' -> 0.6)
 
       pmf.filter(_._1 == 'a').normalized ==== Pmf('a' -> 1.0)
-      pmf.filterKeys(_ != 'a').normalized must beCloseTo(Pmf('b' -> 0.2, 'c' -> 0.6))
+      pmf.filterKeys(_ != 'a').normalized must beCloseTo(Pmf('b' -> 0.25, 'c' -> 0.75))
 
       pmf.toSet ==== Set('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
     }
@@ -103,7 +103,8 @@ class PmfSpec extends Specification with PmfMatchers {
 
     "allow being converted into a Cdf" in {
       val pmf = Pmf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
-      pmf.toCdf === Cdf(Vector('a' -> 0.2, 'b' -> 0.4, 'c' -> 1.0))
+      pmf.toCdf === Cdf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
+      pmf.toCdf.iterator.toSeq === Seq('a' -> 0.2, 'b' -> 0.4, 'c' -> 1.0)
     }
   }
 }

@@ -3,7 +3,7 @@ package thinkbayes.extensions
 import org.apache.commons.math3.distribution._
 import org.apache.commons.math3.random.Well19937c
 import thinkbayes._
-import thinkbayes.extensions.distributions.CommonsMathConversions
+import thinkbayes.extensions.distributions._
 import thinkbayes.extensions.distributions.CommonsMathConversions._
 import weka.estimators.KernelEstimator
 
@@ -22,7 +22,7 @@ object Distributions extends CommonsMathConversions {
   def normalPmf(mean: Double, stdev: Double, numSigmas: Double = 4.0, steps: Int = 2000): Pmf[Double] = {
     val low = mean - numSigmas * stdev
     val high = mean + numSigmas * stdev
-    Pmf(RealDistributionMapView(new NormalDistribution(rndGen, mean, stdev), low to high by ((high - low) / steps)))
+    new RealDistributionPmf(new NormalDistribution(rndGen, mean, stdev), low to high by ((high - low) / steps))
   }
 
   def poissonPmf(lam: Double): Pmf[Int] =
@@ -32,11 +32,13 @@ object Distributions extends CommonsMathConversions {
 
   def exponentialPdf(lam: Double): Pdf = new ExponentialDistribution(rndGen, 1.0 / lam)
 
-  def exponentialPmf(lam: Double, high: Double = Double.PositiveInfinity, steps: Int = 2000): Pmf[Double] = {
-    val distrib = new ExponentialDistribution(rndGen, 1.0 / lam)
-    val realHigh = if (high.isPosInfinity) distrib.inverseCumulativeProbability(1.0 - epsilon) else high
+  def exponentialPmf(lam: Double, steps: Int = 2000,
+                     cutoff: Double = defaultCutoff,
+                     absCutoff: Double = Double.PositiveInfinity): Pmf[Double] = {
 
-    Pmf(RealDistributionMapView(distrib, 0.0 to realHigh by (realHigh / steps)))
+    val distrib = new ExponentialDistribution(rndGen, 1.0 / lam)
+    val high = if (absCutoff.isPosInfinity) approximateRealUpperBound(distrib, cutoff) else absCutoff
+    new RealDistributionPmf(distrib, 0.0 to high by (high / steps))
   }
 
   def binomialPmf(trials: Int, p: Double): Pmf[Int] = new BinomialDistribution(rndGen, trials, p)
@@ -45,4 +47,17 @@ object Distributions extends CommonsMathConversions {
     if (sampleSize == 0 || successCount == 0) Pmf(0 -> 1.0)
     else if (popSize == successCount) Pmf(sampleSize -> 1.0)
     else new HypergeometricDistribution(rndGen, popSize, successCount, sampleSize)
+
+  def betaPdf(alpha: Double, beta: Double): BoundedPdf = {
+    val distrib = new BetaDistribution(alpha, beta)
+
+    if (alpha < 1.0 || beta < 1.0) Pdf(0.0, 1.0)(distrib.density)
+    else Pdf(0.0, 1.0) { x =>
+      if (x == 0.0) { if (alpha == 1.0) beta else 0.0 }
+      else if (x == 1.0) { if (beta == 1.0) alpha else 0.0 }
+      else distrib.density(x)
+    }
+  }
+
+  def betaBinomialPmf(trials: Int, alpha: Double, beta: Double) = new BetaBinomialPmf(trials, alpha, beta)
 }
