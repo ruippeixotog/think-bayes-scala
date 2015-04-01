@@ -31,9 +31,9 @@ object Sampling {
      * @return an infinite iterator of samples randomly drawn from the pmf.
      */
     def samplesIterator: Iterator[K] = {
-      val len = pmf.hist.size
-      val scale = len / pmf.hist.map(_._2).sum
-      val scaled = pmf.hist.toList.map({ case (k, v) => k -> (v * scale) })
+      val len = pmf.size
+      val scale = len / pmf.map(_._2).sum
+      val scaled = pmf.toList.map({ case (k, v) => k -> (v * scale) })
       val (small, large) = scaled.partition(_._2 < 1.0)
 
       @tailrec

@@ -1,7 +1,7 @@
 
 package object thinkbayes {
 
-  implicit class ProbabilityMapUtils[K](val hist: Map[K, Double]) extends AnyVal {
+  implicit class ProbabilityMapUtils[K](hist: Map[K, Double]) {
 
     private def pad(str: String, n: Int): String =
       if (str.length > n) str.substring(0, n) else str + (" " * (n - str.length))
