@@ -4,9 +4,10 @@ import org.specs2.mutable.Specification
 import scala.util.Random
 import thinkbayes._
 import thinkbayes.extensions.Distributions._
+import thinkbayes.extensions.Sampling._
 import thinkbayes.extensions.Stats._
 
-class StatsSpec extends Specification {
+class SamplingSpec extends Specification {
 
   "A PmfSampling" should {
 
