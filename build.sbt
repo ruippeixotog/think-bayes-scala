@@ -30,7 +30,8 @@ scalacOptions ++= Seq(
 
 initialCommands in console := """
   import thinkbayes._
-  import thinkbayes.extensions.Plotting._"""
+  import thinkbayes.extensions.Plotting._
+  import thinkbayes.extensions.Distributions._"""
 
 publishTo <<= version { v =>
   val nexus = "https://oss.sonatype.org/"
