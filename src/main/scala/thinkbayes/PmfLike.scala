@@ -59,6 +59,15 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
     iterator.map { case (h, prob) => num.toDouble(h) * prob }.sum
 
   /**
+   * Returns the variance of this distribution.
+   * @return the variance of this distribution.
+   */
+  def variance(implicit num: Numeric[K]): Double = {
+    val m = mean
+    iterator.map { case (h, prob) => num.toDouble(h) * num.toDouble(h) * prob }.sum - (m * m)
+  }
+
+  /**
    * Generates a random sample of this distribution.
    * @return a random sample of this distribution.
    */

@@ -23,4 +23,7 @@ class BetaBinomialPmf(trials: Int, alpha: Double, beta: Double) extends Pmf[Int]
   def iterator = Iterator.tabulate(trials + 1) { key => (key, p(key)) }
 
   override def mean(implicit num: Numeric[Int]) = trials * alpha / (alpha + beta)
+
+  override def variance(implicit num: Numeric[Int]) =
+    trials * alpha * beta * (alpha + beta + trials) / ((alpha + beta) * (alpha + beta) * (alpha + beta + 1))
 }

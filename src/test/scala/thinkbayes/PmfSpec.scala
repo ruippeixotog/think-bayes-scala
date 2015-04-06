@@ -45,6 +45,11 @@ class PmfSpec extends Specification with PmfMatchers {
       Pmf(2.0 -> 0.5, 3.0 -> 0.5).mean === 2.5
     }
 
+    "allow calculating its variance when its outcomes are numeric" in {
+      Pmf(0 -> 0.2, 1 -> 0.2, 2 -> 0.6).variance must
+        beCloseTo(0.2 * (1.4 * 1.4) + 0.2 * (0.4 * 0.4) + 0.6 * (0.6 * 0.6), 0.00001)
+    }
+
     "allow taking random samples from it" in {
       val nRuns = 10000
       val pmf = Pmf(0 -> 0.4, 1 -> 0.6)
