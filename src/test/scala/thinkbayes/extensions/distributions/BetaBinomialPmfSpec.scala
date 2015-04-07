@@ -94,7 +94,7 @@ class BetaBinomialPmfSpec extends Specification with PmfMatchers {
 
       foreach(table) {
         case ((n, a, b), res) =>
-          new BetaBinomialPmf(n, a, b).mode === res
+          new BetaBinomialPmf(n, a, b).mode.toDouble must beRelativelyCloseTo(res)
       }
     }
   }

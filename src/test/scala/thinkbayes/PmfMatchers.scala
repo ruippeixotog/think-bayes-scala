@@ -7,6 +7,7 @@ trait PmfMatchers { this: SpecificationLike =>
   val defaultEpsilon = 0.00001
 
   def beRelativelyCloseTo(expected: Double) = beCloseTo(expected, math.abs(expected) * defaultEpsilon)
+  def beRelativelyCloseTo(expected: Int) = beCloseTo(expected, math.ceil(math.abs(expected) * defaultEpsilon))
 
   def beCloseTo[K](otherPmf: Pmf[K]): Matcher[Pmf[K]] = { pmf: Pmf[K] =>
     foreach(pmf.iterator) {

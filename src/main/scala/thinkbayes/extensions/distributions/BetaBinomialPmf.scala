@@ -24,6 +24,12 @@ class BetaBinomialPmf(val trials: Int, val alpha: Double, val beta: Double) exte
 
   override def maxProb = { val m = mode; (m, prob(m)) }
 
+  /**
+   * @inheritdoc
+   * In `BetaBinomialPmf`, this method yields a close approximation of the real mode.
+   *
+   * @return the mode of this distribution.
+   */
   override def mode =
     if (alpha > 1.0 && beta > 1.0) round(trials * (alpha - 1.0) / (alpha + beta - 2.0)).toInt
     else if (alpha == 1.0 && beta == 1.0) 0 // or any other value in the range [0, `trials`]
