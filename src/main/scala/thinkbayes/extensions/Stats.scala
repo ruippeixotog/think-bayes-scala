@@ -12,12 +12,17 @@ object Stats {
      * @return the quantile of this `Pmf` according to the Nearest Rank definition.
      */
     def quantile(p: Double)(implicit ord: Ordering[K]): K = {
-      def loop(remHist: Seq[(K, Double)], total: Double): K = remHist match {
-        case (key, _) +: Nil => key
-        case (key, prob) +: rem if total + prob >= p => key
-        case (_, prob) +: rem => loop(rem, total + prob)
-      }
-      loop(pmf.toSeq.sorted, 0.0)
+      val domain = pmf.keysIterator.toIndexedSeq.sorted
+
+      def loop(curr: Int, currProb: Double): K =
+        if (curr >= domain.length - 1) domain(curr)
+        else {
+          val prob = pmf.prob(domain(curr))
+          if (currProb + prob >= p) domain(curr)
+          else loop(curr + 1, currProb + prob)
+        }
+
+      loop(0, 0.0)
     }
 
     def credibleInterval(p: Double)(implicit ord: Ordering[K]): (K, K) =
