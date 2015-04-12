@@ -52,10 +52,10 @@ object Distributions extends CommonsMathConversions {
     val distrib = new BetaDistribution(alpha, beta)
 
     if (alpha < 1.0 || beta < 1.0) Pdf(0.0, 1.0)(distrib.density)
-    else Pdf(0.0, 1.0) { x =>
-      if (x == 0.0) { if (alpha == 1.0) beta else 0.0 }
-      else if (x == 1.0) { if (beta == 1.0) alpha else 0.0 }
-      else distrib.density(x)
+    else Pdf(0.0, 1.0) {
+      case 0.0 => if (alpha == 1.0) beta else 0.0
+      case 1.0 => if (beta == 1.0) alpha else 0.0
+      case x => distrib.density(x)
     }
   }
 
