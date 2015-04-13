@@ -12,6 +12,7 @@ import org.jfree.data.category.DefaultCategoryDataset
 import org.jfree.data.xy.XYSeriesCollection
 import org.jfree.ui.RectangleInsets
 import scala.swing.Swing._
+import scala.util.Try
 import scalax.chart._
 import scalax.chart.api._
 import thinkbayes._
@@ -31,48 +32,71 @@ trait Plotting {
   trait Plottable[K] {
     def values: Seq[(K, Double)]
 
+    /**
+     * Plots this object as a category series in a new chart.
+     * @param seriesName the unique name of the series
+     * @param title the title of the chart
+     * @param xLabel the label to draw on the X axis
+     * @return the newly created chart object.
+     */
     def plotBar(seriesName: String, title: String = "", xLabel: String = "")(
       implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): CategoryChart = {
 
       plotBarOn(emptyPlotBar(title, xLabel), seriesName)
     }
 
+    /**
+     * Plots this object as a category series in the provided chart. If the given series name was used before, the data
+     * of that series is replaced with the new data.
+     * @param chart the category chart to plot this object on
+     * @param seriesName the unique name of the series
+     * @return the provided chart object.
+     */
     def plotBarOn(chart: CategoryChart, seriesName: String)(implicit ord: K => Ordered[K]): chart.type = {
       chart.plot.getDataset match {
         case catDataset: DefaultCategoryDataset =>
+          Try(catDataset.removeRow(seriesName))
           values.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
       }
       chart
     }
 
+    /**
+     * Plots this object as a XY series in a new chart.
+     * @param seriesName the unique name of the series
+     * @param title the title of the chart
+     * @param xLabel the label to draw on the X axis
+     * @return the newly created chart object.
+     */
     def plotXY(seriesName: String, title: String = "", xLabel: String = "")(
       implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): XYChart = {
 
       plotXYOn(emptyPlotXY(title, xLabel), seriesName)
     }
 
-    def plotXYOn[A <: XYChart](chart: A, seriesName: String)(implicit asNum: Numeric[K]): A = {
-      plotXYWithSeriesOn(chart, seriesName)._1
-    }
-
-    def plotXYWithSeriesOn[A <: XYChart](chart: A, seriesName: String, series: XYSeries = null)(implicit asNum: Numeric[K]): (A, XYSeries) = {
+    /**
+     * Plots this object as a XY series in the provided chart. If the given series name was used before, the data of
+     * that series is replaced with the new data.
+     * @param chart the XY chart to plot this object on
+     * @param seriesName the unique name of the series
+     * @return the provided chart object.
+     */
+    def plotXYOn[A <: XYChart](chart: A, seriesName: String)(implicit asNum: Numeric[K]): chart.type = {
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
-          if (series == null) {
-            val newSeries = values.toXYSeries(seriesName)
-            seriesList.addSeries(newSeries)
-            (chart, newSeries)
-          } else {
-            series.clear()
-            series.setKey(seriesName)
-            values.foreach { case (x, y) => series.add(asNum.toDouble(x), y.toDouble) }
-            (chart, series)
-          }
-        case _ => (chart, null)
+          Try(seriesList.removeSeries(seriesList.getSeriesIndex(seriesName)))
+          seriesList.addSeries(values.toXYSeries(seriesName))
       }
+      chart
     }
   }
 
+  /**
+   * Creates an empty chart for plotting category series.
+   * @param title the title of the chart
+   * @param xLabel the label to draw on the X axis
+   * @return the newly created chart object.
+   */
   def emptyPlotBar(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): CategoryChart = {
     val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label = xLabel
@@ -82,6 +106,12 @@ trait Plotting {
     chart
   }
 
+  /**
+   * Creates an empty chart for plotting XY series.
+   * @param title the title of the chart
+   * @param xLabel the label to draw on the X axis
+   * @return the newly created chart object.
+   */
   def emptyPlotXY(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): XYChart = {
     val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label = xLabel
