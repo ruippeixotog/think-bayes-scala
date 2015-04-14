@@ -21,16 +21,16 @@ trait Plotting {
   val defaultTheme = darkChartTheme
   val drawFrame = true
 
-  implicit def mapAsPlottable[K](map: Map[K, Double]) = new Plottable[K] { def values = map.toSeq }
-  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] { def values = suite.pmf.toSeq }
-  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { def values = cdf.iterator.toSeq }
+  implicit def mapAsPlottable[K](map: Map[K, Double]) = new Plottable[K] { protected def plotData = map.toSeq }
+  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] { protected def plotData = suite.pmf.toSeq }
+  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { protected def plotData = cdf.iterator.toSeq }
   implicit def boundedPdfAsPlottable[K](pdf: BoundedPdf) = new Plottable[Double] {
-    def values = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
+    protected def plotData = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
       map { k => (k, pdf.density(k)) }
   }
 
   trait Plottable[K] {
-    def values: Seq[(K, Double)]
+    protected def plotData: Seq[(K, Double)]
 
     /**
      * Plots this object as a category series in a new chart.
@@ -56,7 +56,7 @@ trait Plotting {
       chart.plot.getDataset match {
         case catDataset: DefaultCategoryDataset =>
           Try(catDataset.removeRow(seriesName))
-          values.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
+          plotData.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
       }
       chart
     }
@@ -85,7 +85,7 @@ trait Plotting {
       chart.plot.getDataset match {
         case seriesList: XYSeriesCollection =>
           Try(seriesList.removeSeries(seriesList.getSeriesIndex(seriesName)))
-          seriesList.addSeries(values.toXYSeries(seriesName))
+          seriesList.addSeries(plotData.toXYSeries(seriesName))
       }
       chart
     }
