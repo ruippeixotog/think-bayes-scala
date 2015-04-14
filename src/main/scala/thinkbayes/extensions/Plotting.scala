@@ -21,28 +21,49 @@ trait Plotting {
   val defaultTheme = darkChartTheme
   val drawFrame = true
 
-  implicit def mapAsPlottable[K](map: Map[K, Double]) = new Plottable[K] { protected def plotData = map.toSeq }
-  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] { protected def plotData = suite.pmf.toSeq }
-  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] { protected def plotData = cdf.iterator.toSeq }
+  implicit def mapAsPlottable[K, V](map: Map[K, V])(implicit asNum: Numeric[V]) = new Plottable[K] {
+    protected def plotData = map.mapValues(asNum.toDouble).toSeq
+  }
+
+  implicit def pmfAsPlottable[K](pmf: Pmf[K]) = new Plottable[K] {
+    protected def plotData = pmf.toSeq
+    override protected def defaultYLabel = "probability"
+  }
+
+  implicit def suiteAsPlottable[H](suite: Suite[H, _]) = new Plottable[H] {
+    protected def plotData = suite.pmf.toSeq
+    override protected def defaultYLabel = "probability"
+  }
+
+  implicit def cdfAsPlottable[K](cdf: Cdf[K]) = new Plottable[K] {
+    protected def plotData = cdf.iterator.toSeq
+    override protected def defaultYLabel = "probability"
+  }
+
   implicit def boundedPdfAsPlottable[K](pdf: BoundedPdf) = new Plottable[Double] {
     protected def plotData = (pdf.lowerBound to pdf.upperBound by ((pdf.upperBound - pdf.lowerBound) / 10000)).
       map { k => (k, pdf.density(k)) }
+
+    override protected def defaultYLabel = "probability"
   }
 
   trait Plottable[K] {
     protected def plotData: Seq[(K, Double)]
+    protected def defaultXLabel = ""
+    protected def defaultYLabel = ""
 
     /**
      * Plots this object as a category series in a new chart.
      * @param seriesName the unique name of the series
      * @param title the title of the chart
      * @param xLabel the label to draw on the X axis
+     * @param yLabel the label to draw on the Y axis
      * @return the newly created chart object.
      */
-    def plotBar(seriesName: String, title: String = "", xLabel: String = "")(
+    def plotBar(seriesName: String, title: String = "", xLabel: String = defaultXLabel, yLabel: String = defaultYLabel)(
       implicit ord: K => Ordered[K], theme: ChartTheme = defaultTheme): CategoryChart = {
 
-      plotBarOn(emptyPlotBar(title, xLabel), seriesName)
+      plotBarOn(emptyPlotBar(title, xLabel, yLabel), seriesName)
     }
 
     /**
@@ -56,7 +77,7 @@ trait Plotting {
       chart.plot.getDataset match {
         case catDataset: DefaultCategoryDataset =>
           Try(catDataset.removeRow(seriesName))
-          plotData.sorted.foreach { case (k, prob) => catDataset.addValue(prob, seriesName, k) }
+          plotData.sorted.foreach { case (k, v) => catDataset.addValue(v, seriesName, k) }
       }
       chart
     }
@@ -66,12 +87,13 @@ trait Plotting {
      * @param seriesName the unique name of the series
      * @param title the title of the chart
      * @param xLabel the label to draw on the X axis
+     * @param yLabel the label to draw on the Y axis
      * @return the newly created chart object.
      */
-    def plotXY(seriesName: String, title: String = "", xLabel: String = "")(
+    def plotXY(seriesName: String, title: String = "", xLabel: String = defaultXLabel, yLabel: String = defaultYLabel)(
       implicit asNum: Numeric[K], theme: ChartTheme = defaultTheme): XYChart = {
 
-      plotXYOn(emptyPlotXY(title, xLabel), seriesName)
+      plotXYOn(emptyPlotXY(title, xLabel, yLabel), seriesName)
     }
 
     /**
@@ -141,12 +163,15 @@ trait Plotting {
    * Creates an empty chart for plotting category series.
    * @param title the title of the chart
    * @param xLabel the label to draw on the X axis
+   * @param yLabel the label to draw on the Y axis
    * @return the newly created chart object.
    */
-  def emptyPlotBar(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): CategoryChart = {
+  def emptyPlotBar(title: String = "", xLabel: String = "", yLabel: String = "")(
+    implicit theme: ChartTheme = defaultTheme): CategoryChart = {
+
     val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label = xLabel
-    chart.plot.range.axis.label = "probability"
+    chart.plot.range.axis.label = yLabel
 
     showScalable(chart, title, (1024, 768))
     chart
@@ -156,12 +181,15 @@ trait Plotting {
    * Creates an empty chart for plotting XY series.
    * @param title the title of the chart
    * @param xLabel the label to draw on the X axis
+   * @param yLabel the label to draw on the Y axis
    * @return the newly created chart object.
    */
-  def emptyPlotXY(title: String = "", xLabel: String = "")(implicit theme: ChartTheme = defaultTheme): XYChart = {
+  def emptyPlotXY(title: String = "", xLabel: String = "", yLabel: String = "")(
+    implicit theme: ChartTheme = defaultTheme): XYChart = {
+
     val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label = xLabel
-    chart.plot.range.axis.label = "probability"
+    chart.plot.range.axis.label = yLabel
 
     showScalable(chart, title, (1024, 768))
     chart
