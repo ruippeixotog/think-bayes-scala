@@ -32,7 +32,7 @@ object Sampling {
      */
     def samplesIterator: Iterator[K] = {
       val len = pmf.size
-      val scale = len / pmf.map(_._2).sum
+      val scale = len / pmf.values.sum
       val scaled = pmf.toList.map({ case (k, v) => k -> (v * scale) })
       val (small, large) = scaled.partition(_._2 < 1.0)
 
