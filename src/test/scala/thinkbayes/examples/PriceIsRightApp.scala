@@ -56,7 +56,7 @@ object PriceIsRightApp extends App {
     def probWorseThan(diff: Int): Double = 1.0 - diffCdf.prob(diff)
   }
 
-  case class Price(player: Player) extends Suite[Double, Double] {
+  case class Price(player: Player) extends SimpleSuite[Double, Double] {
     val pmf = player.showcasePmf
 
     def likelihood(guess: Double, showcase: Double): Double =

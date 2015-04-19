@@ -48,7 +48,7 @@ object RedLineApp extends App {
     val yPmf = xPmf
   }
 
-  case class ElapsedTime(pmf: Pmf[Double]) extends Suite[Double, (Double, Int)] {
+  case class ElapsedTime(pmf: Pmf[Double]) extends SimpleSuite[Double, (Double, Int)] {
     def likelihood(data: (Double, Int), x: Double) = poissonPmf(data._1 * x).prob(data._2)
   }
 
@@ -67,7 +67,7 @@ object RedLineApp extends App {
   val observedArrivalRates = List(
     (17, 4.6, 9), (22, 1.0, 0), (23, 1.4, 4), (18, 5.4, 12), (4, 5.8, 11))
 
-  case class ArrivalRate(hypos: Seq[Double]) extends Suite[Double, (Double, Int)] {
+  case class ArrivalRate(hypos: Seq[Double]) extends SimpleSuite[Double, (Double, Int)] {
     val pmf = Pmf(hypos)
     def likelihood(data: (Double, Int), lam: Double) = poissonPmf(lam * data._1).prob(data._2)
   }

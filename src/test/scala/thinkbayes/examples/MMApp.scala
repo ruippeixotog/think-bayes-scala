@@ -29,7 +29,7 @@ object MMApp extends App {
   val mix96 = Map(
     "blue" -> 24, "green" -> 20, "orange" -> 16, "yellow" -> 14, "red" -> 13, "brown" -> 13)
 
-  case class MM(hypos: Seq[Char], hypoDefs: Map[Char, Map[Bag, Mix]]) extends Suite[Char, (Bag, Color)] {
+  case class MM(hypos: Seq[Char], hypoDefs: Map[Char, Map[Bag, Mix]]) extends SimpleSuite[Char, (Bag, Color)] {
     val pmf = Pmf(hypos)
 
     def likelihood(data: (Bag, Color), hypo: Char) =

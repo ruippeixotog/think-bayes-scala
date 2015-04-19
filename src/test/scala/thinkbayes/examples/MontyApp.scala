@@ -27,7 +27,7 @@ import thinkbayes._
  */
 object MontyApp extends App {
 
-  case class Monty(hypos: Seq[Char], firstChoice: Char) extends Suite[Char, Char] {
+  case class Monty(hypos: Seq[Char], firstChoice: Char) extends SimpleSuite[Char, Char] {
     val pmf = Pmf(hypos)
 
     def likelihood(opened: Char, hypo: Char) =

@@ -14,7 +14,7 @@ import thinkbayes._
  */
 object DiceApp extends App {
 
-  case class Dice(hypos: Seq[Int]) extends Suite[Int, Int] {
+  case class Dice(hypos: Seq[Int]) extends SimpleSuite[Int, Int] {
     val pmf = Pmf(hypos)
 
     def likelihood(data: Int, hypo: Int) =

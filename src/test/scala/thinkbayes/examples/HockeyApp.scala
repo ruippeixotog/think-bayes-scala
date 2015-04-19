@@ -15,7 +15,7 @@ import thinkbayes.extensions.Plotting._
  */
 object HockeyApp extends App {
 
-  object Hockey extends Suite[Double, Int] {
+  object Hockey extends SimpleSuite[Double, Int] {
     val pmf = normalPmf(2.7, 0.3, steps = 100)
 
     def likelihood(k: Int, lam: Double) = poissonPmf(lam).prob(k)

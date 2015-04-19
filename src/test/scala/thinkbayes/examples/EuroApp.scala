@@ -29,7 +29,7 @@ object EuroApp extends App {
     Pmf(hist).normalized
   }
 
-  case class Euro(unit: Double = 1.0, triangle: Boolean = false) extends Suite[Double, CoinSide] {
+  case class Euro(unit: Double = 1.0, triangle: Boolean = false) extends SimpleSuite[Double, CoinSide] {
     val pmf = if (triangle) trianglePmf(unit) else Pmf(0.0 to 100.0 by unit)
 
     def likelihood(data: CoinSide, hypo: Double) = (if (data == Heads) hypo else 100.0 - hypo) / 100.0
@@ -37,8 +37,6 @@ object EuroApp extends App {
 
   case class EuroConjugate(alpha: Double = 1.0, beta: Double = 1.0) extends Suite[Double, CoinSide] {
     def pmf = betaPdf(alpha, beta).toPmf(0.0 to 1.0 by 0.0005)
-
-    def likelihood(data: CoinSide, hypo: Double) = ???
 
     override def observed(data: CoinSide) =
       if (data == Heads) EuroConjugate(alpha + 1.0, beta)

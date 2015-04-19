@@ -29,7 +29,7 @@ The `Pmf` class is arguably the core collection in _Think Bayes_, due to the lat
   scala> pmf.prob(_ < 'c')
   res1: Double = 0.4
 
-  scala> pmf.random()
+  scala> pmf.sample()
   res2: Char = c
 
   scala> pmf.printChart()
@@ -115,8 +115,8 @@ The `Distributions` extension provides methods for creating common `Pmf` such as
 The implementation of `Suite` provided in this library does not extend `Pmf`; it is rather provided as a trait which applications can implement to model specific problems:
 
 ```scala
-  scala> case class Dice(hypos: Seq[Int]) extends Suite[Int, Int] { // which dice from `hypos` are we rolling?
-       |   val pmf = Pmf(hypos)
+  scala> case class Dice(hypos: Seq[Int]) extends SimpleSuite[Int, Int] {
+       |   val pmf = Pmf(hypos) // which dice from `hypos` are we rolling?
        |   def likelihood(data: Int, hypo: Int) = if(hypo < data) 0 else 1.0 / hypo
        | }
   defined class Dice
@@ -168,7 +168,7 @@ A `Cdf` can be created just like a `Pmf`. It supports efficient querying for the
 
 ```scala
   scala> val cdf = Cdf('a' -> 0.2, 'b' -> 0.2, 'c' -> 0.6)
-  cdf: thinkbayes.Cdf[Char] = Cdf(Vector((a,0.2), (b,0.4), (c,1.0)))
+  cdf: thinkbayes.Cdf[Char] = CategoricalCdf(Vector((a,0.2), (b,0.4), (c,1.0)))
 
   scala> cdf.prob('b')
   res10: Double = 0.4
@@ -192,7 +192,7 @@ Unlike `Pmf`, `Cdf` does not implement the `Map` trait and, therefore, does not 
   res13: thinkbayes.Pmf[Char] = Map(a -> 0.2, b -> 0.2, c -> 0.6)
 
   scala> cdf.toPmf.toCdf
-  res14: thinkbayes.Cdf[Char] = Cdf(Vector((a,0.2), (b,0.4), (c,1.0)))
+  res14: thinkbayes.Cdf[Char] = CategoricalCdf(Vector((a,0.2), (b,0.4), (c,1.0)))
 ```
 
 ### Probability density functions
@@ -319,13 +319,13 @@ Finally, we can estimate a `Pdf` from a sequence of samples using kernel density
 
 ### Stats
 
-The `Stats` module is a simple extension that provides the calculation of percentiles and credible intervals to `Pmf` and `Cdf` instances:
+The `Stats` module is a simple extension that provides the calculation of quantiles and credible intervals to `Pmf` and `Cdf` instances:
 
 ```scala
   scala> import thinkbayes.extensions.Stats._
   import thinkbayes.extensions.Stats._
 
-  scala> normalPmf(2.5, 1.5).percentile(0.5)
+  scala> normalPmf(2.5, 1.5).quantile(0.5)
   res21: Double = 2.5
 
   scala> normalPmf(0.0, 1.0).credibleInterval(0.9)

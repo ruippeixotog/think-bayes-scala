@@ -12,7 +12,7 @@ import thinkbayes.extensions.Stats._
  */
 object LocomotiveApp extends App {
 
-  case class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends Suite[Int, Int] {
+  case class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends SimpleSuite[Int, Int] {
     val pmf = Pmf(hypos.map { hypo => (hypo, math.pow(hypo, -alpha)) }.toMap).normalized
 
     def likelihood(data: Int, hypo: Int) =
