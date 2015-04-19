@@ -45,7 +45,7 @@ object CommonsMathConversions {
   class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double])
       extends Pmf[Double] with ClosedFormPmf[Double] {
 
-    def get(key: Double) = Some(distrib.probability(key))
+    def get(key: Double) = Some(distrib.density(key))
     def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
 
     override def toCdf(implicit ord: Ordering[Double]) = new RealDistributionCdf(distrib, domain)
@@ -73,7 +73,7 @@ object CommonsMathConversions {
   class RealDistributionCdf(distrib: RealDistribution, domain: Seq[Double]) extends Cdf[Double] {
     def prob(key: Double): Double = distrib.cumulativeProbability(key)
     def value(prob: Double): Double = distrib.inverseCumulativeProbability(prob)
-    def iterator = domain.iterator.map { key => (key, distrib.density(key)) }
+    def iterator = domain.iterator.map { key => (key, distrib.cumulativeProbability(key)) }
 
     override def toPmf = new RealDistributionPmf(distrib, domain)
   }

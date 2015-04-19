@@ -13,7 +13,14 @@ class DistributionsSpec extends Specification with PmfMatchers {
     }
 
     "provide a way to create approximate Pmfs for normal distributions" in {
-      todo
+      forall(-5.0 to 5.0 by 1.0) { mean =>
+        forall(0.5 to 7.0 by 0.5) { sd =>
+          val pmf = normalPmf(mean, sd, numSigmas = 6).normalized
+          pmf.mean must beRelativelyCloseTo(mean)
+          pmf.variance must beRelativelyCloseTo(sd * sd)
+          pmf.toCdf.value(0.5) must beRelativelyCloseTo(mean)
+        }
+      }
     }
 
     "provide a way to create Pmfs for Poisson distributions" in {
