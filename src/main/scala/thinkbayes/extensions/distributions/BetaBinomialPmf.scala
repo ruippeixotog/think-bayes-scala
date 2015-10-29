@@ -4,6 +4,9 @@ import org.apache.commons.math3.special.Beta._
 import org.apache.commons.math3.util.CombinatoricsUtils._
 import org.apache.commons.math3.util.FastMath._
 import thinkbayes.Pmf
+import org.apache.commons.math3.special.Gamma._
+import org.apache.commons.math3.util.FastMath
+import thinkbayes.{ Cdf, Pmf }
 
 /**
  * A `Pmf` of a beta-binomial distribution ([[http://en.wikipedia.org/wiki/Beta-binomial_distribution]]).
@@ -40,4 +43,6 @@ class BetaBinomialPmf(val trials: Int, val alpha: Double, val beta: Double) exte
 
   override def variance(implicit num: Numeric[Int]) =
     trials * alpha * beta * (alpha + beta + trials) / ((alpha + beta) * (alpha + beta) * (alpha + beta + 1))
+
+  override def toCdf(implicit ord: Ordering[Int]) = new BetaBinomialCdf(trials, alpha, beta)
 }
