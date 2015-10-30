@@ -6,15 +6,15 @@ organization := "net.ruippeixotog"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.wookietreiber" %% "scala-chart"   % "0.4.2",
-  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.12",
+  "com.github.wookietreiber" %% "scala-chart"   % "0.5.0",
+  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.13",
   "org.apache.commons"        % "commons-math3" % "3.5",
-  "org.specs2"               %% "specs2-core"   % "3.6.1"    % "test")
+  "org.specs2"               %% "specs2-core"   % "3.6.5"    % "test")
 
 scalariformSettings
 
