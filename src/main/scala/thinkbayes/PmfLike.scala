@@ -123,10 +123,11 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    *
    * @param other the `Pmf` to combine with this `Pmf`
    * @param comb the function used to combine outcomes from the two `Pmf`s
+   * @tparam K2 the type of the outcomes of `other`
    * @tparam J the type of the resulting outcomes
    * @return a new `Pmf` resultant from combining this `Pmf` and `other` using the function `comb`
    */
-  def join[J, That](other: Pmf[K], comb: (K, K) => J): Pmf[J] = {
+  def join[K2, J, That](other: Pmf[K2])(comb: (K, K2) => J): Pmf[J] = {
     val b = Pmf.newBuilder[J]
     for ((k, prob) <- this; (k2, prob2) <- other)
       b += (comb(k, k2) -> prob * prob2)
@@ -140,7 +141,7 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @param num an evidence that the outcomes of this distribution are numeric
    * @return the distribution of the sum of this `Pmf` with `other`.
    */
-  def ++(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.plus)
+  def ++(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other)(num.plus)
 
   /**
    * Returns the distribution of the difference of two independent `Pmf`s. This method always returns a normalized
@@ -150,7 +151,7 @@ trait PmfLike[K, +This <: PmfLike[K, This] with Pmf[K]] extends MapLike[K, Doubl
    * @param num an evidence that the outcomes of this distribution are numeric
    * @return the distribution of the difference between this `Pmf` and `other`.
    */
-  def --(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other, num.minus)
+  def --(other: Pmf[K])(implicit num: Numeric[K]): Pmf[K] = join(other)(num.minus)
 
   /**
    * Returns the mixture distribution that results from the combination of the `Pmf` outcomes. This method always

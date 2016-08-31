@@ -92,10 +92,10 @@ class PmfSpec extends Specification with PmfMatchers {
 
     "allow being combined with another using a custom join function" in {
       val d6 = Pmf(1 to 6)
-      d6.join(d6, math.max) must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield math.max(i, j)))
+      d6.join(d6)(math.max) must beCloseTo(Pmf(for { i <- 1 to 6; j <- 1 to 6 } yield math.max(i, j)))
 
       val coin = Pmf('H' -> 0.4, 'T' -> 0.6)
-      coin.join(coin, _.toString + _) must beCloseTo(Pmf("HH" -> 0.16, "HT" -> 0.24, "TH" -> 0.24, "TT" -> 0.36))
+      coin.join(coin)(_.toString + _) must beCloseTo(Pmf("HH" -> 0.16, "HT" -> 0.24, "TH" -> 0.24, "TT" -> 0.36))
     }
 
     "allow being flattened (mixtured) if its keys are also Pmfs" in {
