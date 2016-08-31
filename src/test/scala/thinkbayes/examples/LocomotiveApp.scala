@@ -5,11 +5,11 @@ import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 
 /**
- * Application for solving the locomotive problem (page 20):
- *
- * "A railroad numbers its locomotives in order 1..N. One day you see a locomotive with
- * the number 60. Estimate how many locomotives the railroad has."
- */
+  * Application for solving the locomotive problem (page 20):
+  *
+  * "A railroad numbers its locomotives in order 1..N. One day you see a locomotive with
+  * the number 60. Estimate how many locomotives the railroad has."
+  */
 object LocomotiveApp extends App {
 
   case class Locomotive(hypos: Seq[Int], alpha: Double = 0.0) extends SimpleSuite[Int, Int] {

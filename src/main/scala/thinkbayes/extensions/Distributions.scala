@@ -32,9 +32,11 @@ object Distributions extends CommonsMathConversions {
 
   def exponentialPdf(lam: Double): Pdf = new ExponentialDistribution(rndGen, 1.0 / lam)
 
-  def exponentialPmf(lam: Double, steps: Int = 2000,
-                     cutoff: Double = defaultCutoff,
-                     absCutoff: Double = Double.PositiveInfinity): Pmf[Double] = {
+  def exponentialPmf(
+    lam: Double,
+    steps: Int = 2000,
+    cutoff: Double = defaultCutoff,
+    absCutoff: Double = Double.PositiveInfinity): Pmf[Double] = {
 
     val distrib = new ExponentialDistribution(rndGen, 1.0 / lam)
     val high = if (absCutoff.isPosInfinity) approximateRealUpperBound(distrib, cutoff) else absCutoff

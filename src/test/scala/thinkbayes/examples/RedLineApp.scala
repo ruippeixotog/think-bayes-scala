@@ -5,24 +5,24 @@ import thinkbayes.extensions.Distributions._
 import thinkbayes.extensions.Plotting._
 
 /**
- * Application for studying the The Red Line problem (page 77):
- *
- * "In Massachusetts, the Red Line is a subway that connects Cambridge and Boston. When
- * I was working in Cambridge I took the Red Line from Kendall Square to South Station
- * and caught the commuter rail to Needham. During rush hour Red Line trains run every
- * 7–8 minutes, on average.
- *
- * When I arrived at the station, I could estimate the time until the next train based on the
- * number of passengers on the platform. If there were only a few people, I inferred that I
- * just missed a train and expected to wait about 7 minutes. If there were more passengers,
- * I expected the train to arrive sooner. But if there were a large number of passengers, I
- * suspected that trains were not running on schedule, so I would go back to the street
- * level and get a taxi.
- *
- * While I was waiting for trains, I thought about how Bayesian estimation could help
- * predict my wait time and decide when I should give up and take a taxi. This chapter
- * presents the analysis I came up with."
- */
+  * Application for studying the The Red Line problem (page 77):
+  *
+  * "In Massachusetts, the Red Line is a subway that connects Cambridge and Boston. When
+  * I was working in Cambridge I took the Red Line from Kendall Square to South Station
+  * and caught the commuter rail to Needham. During rush hour Red Line trains run every
+  * 7–8 minutes, on average.
+  *
+  * When I arrived at the station, I could estimate the time until the next train based on the
+  * number of passengers on the platform. If there were only a few people, I inferred that I
+  * just missed a train and expected to wait about 7 minutes. If there were more passengers,
+  * I expected the train to arrive sooner. But if there were a large number of passengers, I
+  * suspected that trains were not running on schedule, so I would go back to the street
+  * level and get a taxi.
+  *
+  * While I was waiting for trains, I thought about how Bayesian estimation could help
+  * predict my wait time and decide when I should give up and take a taxi. This chapter
+  * presents the analysis I came up with."
+  */
 object RedLineApp extends App {
 
   val observedGapTimes = List(
@@ -52,9 +52,10 @@ object RedLineApp extends App {
     def likelihood(data: (Double, Int), x: Double) = poissonPmf(data._1 * x).prob(data._2)
   }
 
-  case class ElapsedTimeEstimator(calc: WaitTimeCalculator,
-                                  lam: Double = 2.0,
-                                  numPasengers: Int = 15) {
+  case class ElapsedTimeEstimator(
+      calc: WaitTimeCalculator,
+      lam: Double = 2.0,
+      numPasengers: Int = 15) {
 
     def predictWaitTime(xPmf: Pmf[Double]): Pmf[Double] =
       (calc.zbPmf -- xPmf).filterKeys(_ >= 0.0).normalized
@@ -92,7 +93,8 @@ object RedLineApp extends App {
   println("Plotting the CDF of gap and wait times...")
   val cdfTimesChartTitle = "CDF of gap and wait times"
 
-  val cdfTimesChart = zPmf.toCdf.plotXY("Actual gap time (z)",
+  val cdfTimesChart = zPmf.toCdf.plotXY(
+    "Actual gap time (z)",
     title = cdfTimesChartTitle, xLabel = "Minutes")
 
   calc.zbPmf.toCdf.plotXYOn(cdfTimesChart, "Biased gap time (zb)")
@@ -104,7 +106,8 @@ object RedLineApp extends App {
 
   val ete = ElapsedTimeEstimator(calc)
 
-  val postWaitChart = ete.xPriorSuite.pmf.toCdf.plotXY("Prior x",
+  val postWaitChart = ete.xPriorSuite.pmf.toCdf.plotXY(
+    "Prior x",
     title = postWaitChartTitle, xLabel = "Wait time (min)")
 
   ete.xPostSuite.pmf.toCdf.plotXYOn(postWaitChart, "Posterior x")
@@ -117,7 +120,8 @@ object RedLineApp extends App {
 
   val are = ArrivalRateEstimator(observedArrivalRates)
 
-  val arrivalRatesChart = are.lamPriorSuite.pmf.toCdf.plotXY("Prior λ",
+  val arrivalRatesChart = are.lamPriorSuite.pmf.toCdf.plotXY(
+    "Prior λ",
     title = arrivalRatesChartTitle, xLabel = "Arrival rate (passengers / min)")
 
   are.lamPostSuite.pmf.toCdf.plotXYOn(arrivalRatesChart, "Posterior λ")
@@ -129,6 +133,7 @@ object RedLineApp extends App {
 
   val yPredPmf = are.lamPostSuite.pmf.mapKeys(ElapsedTimeEstimator(calc, _).yPmf).mixture
 
-  val predWaitChart = yPredPmf.toCdf.plotXY("Mix",
+  val predWaitChart = yPredPmf.toCdf.plotXY(
+    "Mix",
     title = predWaitChartTitle, xLabel = "Wait time (min)")
 }

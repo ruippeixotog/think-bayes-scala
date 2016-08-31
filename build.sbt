@@ -6,20 +6,20 @@ organization := "net.ruippeixotog"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
   "com.github.wookietreiber" %% "scala-chart"   % "0.5.0",
-  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.6.13",
-  "org.apache.commons"        % "commons-math3" % "3.5",
-  "org.specs2"               %% "specs2-core"   % "3.6.5"    % "test")
+  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.0",
+  "org.apache.commons"        % "commons-math3" % "3.6.1",
+  "org.specs2"               %% "specs2-core"   % "3.8.4"    % "test")
 
-scalariformSettings
-
-ScalariformKeys.preferences := ScalariformKeys.preferences.value.
-  setPreference(AlignParameters, true)
+scalariformPreferences := scalariformPreferences.value
+  .setPreference(DanglingCloseParenthesis, Prevent)
+  .setPreference(DoubleIndentClassDeclaration, true)
+  .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
 
 scalacOptions ++= Seq(
   "-deprecation",

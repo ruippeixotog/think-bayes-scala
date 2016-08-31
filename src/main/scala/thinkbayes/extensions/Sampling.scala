@@ -18,18 +18,18 @@ object Sampling {
   def sampleMax[K: Ordering](pmfs: TraversableOnce[Pmf[K]], n: Int) = sampleJoin[K, K](pmfs, n, _.max)
 
   /**
-   * Adds sampling extensions to `Pmf`
-   */
+    * Adds sampling extensions to `Pmf`
+    */
   implicit class PmfSampling[K](val pmf: Pmf[K]) extends AnyVal {
 
     /**
-     * This implements the alias method as described in
-     * http://www.keithschwarz.com/darts-dice-coins/
-     *
-     * It has a total initialization time of O(n) and generation time of O(1).
-     *
-     * @return an infinite iterator of samples randomly drawn from the pmf.
-     */
+      * This implements the alias method as described in
+      * http://www.keithschwarz.com/darts-dice-coins/
+      *
+      * It has a total initialization time of O(n) and generation time of O(1).
+      *
+      * @return an infinite iterator of samples randomly drawn from the pmf.
+      */
     def samplesIterator: Iterator[K] = {
       val len = pmf.size
       val scale = len / pmf.values.sum

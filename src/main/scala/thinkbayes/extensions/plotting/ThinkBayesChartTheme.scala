@@ -57,7 +57,8 @@ class ThinkBayesChartTheme(name: String) extends StandardChartTheme(name, false)
     super.applyToTitle(title)
     title match {
       case lt: LegendTitle =>
-        lt.setFrame(new LineBorder(new Color(0, 0, 0, 0),
+        lt.setFrame(new LineBorder(
+          new Color(0, 0, 0, 0),
           new BasicStroke(),
           RectangleInsets.ZERO_INSETS))
     }

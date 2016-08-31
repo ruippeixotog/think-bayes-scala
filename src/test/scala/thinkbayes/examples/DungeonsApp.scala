@@ -5,16 +5,16 @@ import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Sampling._
 
 /**
- * Application for solving the Dungeons and Dragons d6 problem (page 42):
- *
- * "The first example is based on Dungeons & Dragons, a role-playing game where the results
- * of players’ decisions are usually determined by rolling dice. In fact, before game play
- * starts, players generate each attribute of their characters—strength, intelligence, wisdom,
- * dexterity, constitution, and charisma—by rolling three 6-sided dice and adding
- * them up.
- *
- * So you might be curious to know the distribution of this sum."
- */
+  * Application for solving the Dungeons and Dragons d6 problem (page 42):
+  *
+  * "The first example is based on Dungeons & Dragons, a role-playing game where the results
+  * of players’ decisions are usually determined by rolling dice. In fact, before game play
+  * starts, players generate each attribute of their characters—strength, intelligence, wisdom,
+  * dexterity, constitution, and charisma—by rolling three 6-sided dice and adding
+  * them up.
+  *
+  * So you might be curious to know the distribution of this sum."
+  */
 object DungeonsApp extends App {
 
   def die(sides: Int) = Pmf(1 to sides)

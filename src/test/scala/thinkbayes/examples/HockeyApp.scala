@@ -5,14 +5,14 @@ import thinkbayes.extensions.Distributions._
 import thinkbayes.extensions.Plotting._
 
 /**
- * Application for studying the The Boston Bruins problem (page 65):
- *
- * "In the 2010-11 National Hockey League (NHL) Finals, my beloved Boston Bruins played
- * a best-of-seven championship series against the despised Vancouver Canucks. Boston
- * lost the first two games 0-1 and 2-3, then won the next two games 8-1 and 4-0. At this
- * point in the series, what is the probability that Boston will win the next game, and what
- * is their probability of winning the championship?"
- */
+  * Application for studying the The Boston Bruins problem (page 65):
+  *
+  * "In the 2010-11 National Hockey League (NHL) Finals, my beloved Boston Bruins played
+  * a best-of-seven championship series against the despised Vancouver Canucks. Boston
+  * lost the first two games 0-1 and 2-3, then won the next two games 8-1 and 4-0. At this
+  * point in the series, what is the probability that Boston will win the next game, and what
+  * is their probability of winning the championship?"
+  */
 object HockeyApp extends App {
 
   object Hockey extends SimpleSuite[Double, Int] {

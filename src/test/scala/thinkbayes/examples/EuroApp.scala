@@ -6,15 +6,15 @@ import thinkbayes.extensions.Plotting._
 import thinkbayes.extensions.Stats._
 
 /**
- * Application for solving the Euro problem (page 29):
- *
- * "When spun on edge 250 times, a Belgian one-euro coin came up heads 140
- * times and tails 110. ‘It looks very suspicious to me,’ said Barry Blight, a statistics
- * lecturer at the London School of Economics. ‘If the coin were unbiased, the
- * chance of getting a result as extreme as that would be less than 7%.’
- *
- * But do these data give evidence that the coin is biased rather than fair?"
- */
+  * Application for solving the Euro problem (page 29):
+  *
+  * "When spun on edge 250 times, a Belgian one-euro coin came up heads 140
+  * times and tails 110. ‘It looks very suspicious to me,’ said Barry Blight, a statistics
+  * lecturer at the London School of Economics. ‘If the coin were unbiased, the
+  * chance of getting a result as extreme as that would be less than 7%.’
+  *
+  * But do these data give evidence that the coin is biased rather than fair?"
+  */
 object EuroApp extends App {
 
   type CoinSide = Boolean
