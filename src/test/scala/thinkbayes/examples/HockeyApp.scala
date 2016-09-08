@@ -35,7 +35,7 @@ object HockeyApp extends App {
   val bruinsPosterior = Hockey.observed(0, 2, 8, 4)
   val canucksPosterior = Hockey.observed(1, 3, 1, 0)
 
-  val perGameChart = bruinsPosterior.plotXY("Bruins", title = perGameChartTitle, xLabel = "Goals per game")
+  val perGameChart = bruinsPosterior.showXY("Bruins", title = perGameChartTitle, xLabel = "Goals per game")
   canucksPosterior.plotXYOn(perGameChart, "Canucks")
 
   println("Plotting the distribution of goals in a single game...")
@@ -44,7 +44,7 @@ object HockeyApp extends App {
   val bruinsGoalsPmf = numGoalsPmf(bruinsPosterior.pmf)
   val canucksGoalsPmf = numGoalsPmf(canucksPosterior.pmf)
 
-  val goalsChart = bruinsGoalsPmf.plotXY("Bruins", title = goalsChartTitle, xLabel = "Goals")
+  val goalsChart = bruinsGoalsPmf.showXY("Bruins", title = goalsChartTitle, xLabel = "Goals")
   canucksGoalsPmf.plotXYOn(goalsChart, "Canucks")
 
   println()
@@ -63,7 +63,7 @@ object HockeyApp extends App {
   val bruinsGoalTimePmf = goalTimePmf(bruinsPosterior.pmf)
   val canucksGoalTimePmf = goalTimePmf(canucksPosterior.pmf)
 
-  val goalTimeChart = bruinsGoalTimePmf.plotXY("Bruins", title = goalTimeChartTitle, xLabel = "Games until goal")
+  val goalTimeChart = bruinsGoalTimePmf.showXY("Bruins", title = goalTimeChartTitle, xLabel = "Games until goal")
   canucksGoalTimePmf.plotXYOn(goalTimeChart, "Canucks")
 
   println()

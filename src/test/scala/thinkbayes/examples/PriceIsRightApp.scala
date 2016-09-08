@@ -104,7 +104,7 @@ object PriceIsRightApp extends App {
   println("Plotting the showcase price distributions...")
   val scChartTitle = "Prices of showcases 2011-2012"
 
-  val scChart = player1.showcasePmf.plotXY("Showcase 1", title = scChartTitle, xLabel = "Price ($)")
+  val scChart = player1.showcasePmf.showXY("Showcase 1", title = scChartTitle, xLabel = "Price ($)")
   player2.showcasePmf.plotXYOn(scChart, "Showcase 2")
 
   // ---------
@@ -112,7 +112,7 @@ object PriceIsRightApp extends App {
   println("Plotting the distribution of the bid errors...")
   val diffChartTitle = "Difference between the players' bid and the actual price"
 
-  val diffChart = player1.diffCdf.plotXY("Player 1", title = diffChartTitle, xLabel = "Diff ($)")
+  val diffChart = player1.diffCdf.showXY("Player 1", title = diffChartTitle, xLabel = "Diff ($)")
   player2.diffCdf.plotXYOn(diffChart, "Player 2")
 
   // ---------
@@ -121,7 +121,7 @@ object PriceIsRightApp extends App {
   val guessChartTitle = "Distributions for player 1 based on a best guess of 20000$"
 
   val pricePrior = Price(player1)
-  val guessChart = pricePrior.plotXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
+  val guessChart = pricePrior.showXY("Prior", title = guessChartTitle, xLabel = "Price ($)")
 
   val pricePosterior = pricePrior.observed(20000)
   pricePosterior.plotXYOn(guessChart, "Posterior")

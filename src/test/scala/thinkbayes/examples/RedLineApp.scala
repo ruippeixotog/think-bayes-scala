@@ -87,13 +87,13 @@ object RedLineApp extends App {
   val zPmf = estimatePdf(observedGapTimes).toPmf(0.0 to 20.0 by prec / 2)
   val calc = WaitTimeCalculator(zPmf)
 
-  val gapChart = zPmf.plotXY("Actual (z)", title = gapChartTitle, xLabel = "Minutes")
+  val gapChart = zPmf.showXY("Actual (z)", title = gapChartTitle, xLabel = "Minutes")
   calc.zbPmf.plotXYOn(gapChart, "As seen by passengers (zb)")
 
   println("Plotting the CDF of gap and wait times...")
   val cdfTimesChartTitle = "CDF of gap and wait times"
 
-  val cdfTimesChart = zPmf.toCdf.plotXY(
+  val cdfTimesChart = zPmf.toCdf.showXY(
     "Actual gap time (z)",
     title = cdfTimesChartTitle, xLabel = "Minutes")
 
@@ -106,7 +106,7 @@ object RedLineApp extends App {
 
   val ete = ElapsedTimeEstimator(calc)
 
-  val postWaitChart = ete.xPriorSuite.pmf.toCdf.plotXY(
+  val postWaitChart = ete.xPriorSuite.pmf.toCdf.showXY(
     "Prior x",
     title = postWaitChartTitle, xLabel = "Wait time (min)")
 
@@ -120,7 +120,7 @@ object RedLineApp extends App {
 
   val are = ArrivalRateEstimator(observedArrivalRates)
 
-  val arrivalRatesChart = are.lamPriorSuite.pmf.toCdf.plotXY(
+  val arrivalRatesChart = are.lamPriorSuite.pmf.toCdf.showXY(
     "Prior λ",
     title = arrivalRatesChartTitle, xLabel = "Arrival rate (passengers / min)")
 
@@ -133,7 +133,7 @@ object RedLineApp extends App {
 
   val yPredPmf = are.lamPostSuite.pmf.mapKeys(ElapsedTimeEstimator(calc, _).yPmf).mixture
 
-  val predWaitChart = yPredPmf.toCdf.plotXY(
+  val predWaitChart = yPredPmf.toCdf.showXY(
     "Mix",
     title = predWaitChartTitle, xLabel = "Wait time (min)")
 }

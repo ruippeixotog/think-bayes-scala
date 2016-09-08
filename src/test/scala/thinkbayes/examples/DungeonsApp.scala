@@ -27,18 +27,18 @@ object DungeonsApp extends App {
   val threeSum = sampleSum(three, 1000).normalized
   val threeSumExact = three.reduce(_ ++ _).normalized
 
-  val chartSum = threeSum.plotXY("Sample", title = "Sum of three d6", xLabel = "Sum")
+  val chartSum = threeSum.showXY("Sample", title = "Sum of three d6", xLabel = "Sum")
   threeSumExact.plotXYOn(chartSum, "Exact")
 
   val threeMax = sampleMax(three, 1000).normalized
   val threeMaxExp = die(6).toCdf.pow(3).toPmf
 
-  val chartMax = threeMax.plotXY("Sample", title = "Max of three d6", xLabel = "Max")
+  val chartMax = threeMax.showXY("Sample", title = "Max of three d6", xLabel = "Max")
   threeMaxExp.plotXYOn(chartMax, "Exponential")
 
   // mixture
   val five = Pmf(List(4, 6, 8, 12, 20).map(die))
   val mix = five.mixture
 
-  mix.plotBar("Outcome", title = "Outcome of random die from a box", xLabel = "Outcome")
+  mix.showBar("Outcome", title = "Outcome of random die from a box", xLabel = "Outcome")
 }

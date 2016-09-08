@@ -1,19 +1,16 @@
 package thinkbayes.extensions
 
-import org.jfree.chart._
-import org.jfree.data.category.DefaultCategoryDataset
-import org.jfree.data.xy.XYSeriesCollection
-import thinkbayes._
-import thinkbayes.extensions.plotting.ThinkBayesChartTheme
-
-import scala.swing.Swing._
 import scala.util.Try
 import scalax.chart._
 import scalax.chart.api._
 
+import org.jfree.data.category.DefaultCategoryDataset
+import org.jfree.data.xy.XYSeriesCollection
+import thinkbayes._
+import thinkbayes.extensions.plotting.{ ShowControls, ThinkBayesChartTheme }
+
 trait Plotting {
   val defaultTheme = ThinkBayesChartTheme.Dark
-  val drawFrame = true
 
   implicit def mapAsPlottable[K, V](map: Map[K, V])(implicit asNum: Numeric[V]) = new Plottable[K] {
     protected def plotData = map.mapValues(asNum.toDouble).toSeq
@@ -62,6 +59,21 @@ trait Plotting {
     }
 
     /**
+      * Plots this object as a category series in a new chart and opens it in a window afterwards.
+      * @param seriesName the unique name of the series
+      * @param title the title of the chart
+      * @param xLabel the label to draw on the X axis
+      * @param yLabel the label to draw on the Y axis
+      * @return the newly created chart object.
+      */
+    def showBar(seriesName: String, title: String = "", xLabel: String = defaultXLabel, yLabel: String = defaultYLabel)(
+      implicit
+      ord: K => Ordered[K], theme: ChartTheme = defaultTheme): CategoryChart = {
+
+      plotBar(seriesName, title, xLabel, yLabel).showScalable()
+    }
+
+    /**
       * Plots this object as a category series in the provided chart. If the given series name was used before, the data
       * of that series is replaced with the new data.
       * @param chart the category chart to plot this object on
@@ -93,6 +105,21 @@ trait Plotting {
     }
 
     /**
+      * Plots this object as a XY series in a new chart and opens it in a window afterwards.
+      * @param seriesName the unique name of the series
+      * @param title the title of the chart
+      * @param xLabel the label to draw on the X axis
+      * @param yLabel the label to draw on the Y axis
+      * @return the newly created chart object.
+      */
+    def showXY(seriesName: String, title: String = "", xLabel: String = defaultXLabel, yLabel: String = defaultYLabel)(
+      implicit
+      asNum: Numeric[K], theme: ChartTheme = defaultTheme): XYChart = {
+
+      plotXY(seriesName, title, xLabel, yLabel).showScalable()
+    }
+
+    /**
       * Plots this object as a XY series in the provided chart. If the given series name was used before, the data of
       * that series is replaced with the new data.
       * @param chart the XY chart to plot this object on
@@ -107,6 +134,28 @@ trait Plotting {
       }
       chart
     }
+  }
+
+  implicit class RichChart[C <: Chart](val chart: C) {
+
+    /**
+      * Shows this chart in a new window.
+      * @return this chart.
+      */
+    def showScalable(): chart.type = {
+      val controls = new ShowControls(chart)
+      controls.onHide(controls.dispose())
+      controls.show()
+      chart
+    }
+
+    /**
+      * Returns a `ShowControls` instance for this chart. The returned object contains methods for showing the chart in
+      * a window using Swing, as well as closing it programatically and adding hooks for open and close events.
+      *
+      * @return a `ShowControls` instance for this chart.
+      */
+    def showControls = new ShowControls(chart)
   }
 
   implicit class RichCategoryChart(val chart: CategoryChart) {
@@ -169,8 +218,6 @@ trait Plotting {
     val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label.text = xLabel
     chart.plot.range.axis.label.text = yLabel
-
-    showScalable(chart, title, (1024, 768))
     chart
   }
 
@@ -188,25 +235,8 @@ trait Plotting {
     val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
     chart.plot.domain.axis.label.text = xLabel
     chart.plot.range.axis.label.text = yLabel
-
-    showScalable(chart, title, (1024, 768))
     chart
   }
-
-  private[this] def showScalable(chart: Chart, windowTitle: String, dim: (Int, Int)) {
-    if (drawFrame) {
-      val frame = chart.toFrame(windowTitle)
-      val panel = frame.peer.asInstanceOf[ChartFrame].getChartPanel
-      panel.setMaximumDrawWidth(Int.MaxValue)
-      panel.setMaximumDrawHeight(Int.MaxValue)
-      frame.size = dim
-      frame.visible = true
-    }
-  }
 }
 
-object Plotting extends Plotting {
-  object NoSwing extends Plotting {
-    override val drawFrame = false
-  }
-}
+object Plotting extends Plotting

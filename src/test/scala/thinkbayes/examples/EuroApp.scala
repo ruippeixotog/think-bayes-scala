@@ -56,7 +56,7 @@ object EuroApp extends App {
   val triPrior = Euro(triangle = true)
 
   println("Plotting priors...")
-  val priorPlot = unifPrior.plotXY("Uniform", title = "Prior", xLabel = "Probability of heads (%)")
+  val priorPlot = unifPrior.showXY("Uniform", title = "Prior", xLabel = "Probability of heads (%)")
   triPrior.plotXYOn(priorPlot, "Triangle")
 
   println("Plotting posteriors after 140 heads and 110 tails are seen...")
@@ -64,7 +64,7 @@ object EuroApp extends App {
   val unifPosterior = unifPrior.observedSet(dataset)
   val triPosterior = triPrior.observedSet(dataset)
 
-  val postPlot = unifPosterior.plotXY("Uniform", title = "Posterior", xLabel = "Probability of heads (%)")
+  val postPlot = unifPosterior.showXY("Uniform", title = "Posterior", xLabel = "Probability of heads (%)")
   triPosterior.plotXYOn(postPlot, "Triangle")
 
   println()
@@ -85,5 +85,5 @@ object EuroApp extends App {
   println("Plotting posterior using a beta distribution...")
   val conjPrior = EuroConjugate()
   val conjPosterior = conjPrior.observedSet(140, 110)
-  conjPosterior.plotXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
+  conjPosterior.showXY("Beta", title = "Beta distribution", xLabel = "Probability of heads")
 }

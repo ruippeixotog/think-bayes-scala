@@ -25,14 +25,14 @@ object LocomotiveApp extends App {
   val prior2 = Locomotive(1 to 1000, 1.0)
 
   println("Plotting priors...")
-  val priorPlot = prior.plotXY("Uniform", title = "Prior", xLabel = "Number of trains")
+  val priorPlot = prior.showXY("Uniform", title = "Prior", xLabel = "Number of trains")
   prior2.plotXYOn(priorPlot, "Power law")
 
   println()
   println("Plotting posteriors after a train with number 60 is seen...")
   val posterior = prior.observed(60)
   val posterior2 = prior2.observed(60)
-  val postPlot = posterior.plotXY("Uniform", title = "After train #60", xLabel = "Number of trains")
+  val postPlot = posterior.showXY("Uniform", title = "After train #60", xLabel = "Number of trains")
   posterior2.plotXYOn(postPlot, "Power law")
 
   println()
