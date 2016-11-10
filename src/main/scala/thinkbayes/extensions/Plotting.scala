@@ -215,7 +215,8 @@ trait Plotting {
     implicit
     theme: ChartTheme = defaultTheme): CategoryChart = {
 
-    val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
+    val chart = BarChart(Seq.empty[(String, Seq[(Int, Double)])])
+    chart.title = title
     chart.plot.domain.axis.label.text = xLabel
     chart.plot.range.axis.label.text = yLabel
     chart
@@ -232,7 +233,8 @@ trait Plotting {
     implicit
     theme: ChartTheme = defaultTheme): XYChart = {
 
-    val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])], title = title)
+    val chart = XYLineChart(Seq.empty[(String, Seq[(Int, Double)])])
+    chart.title = title
     chart.plot.domain.axis.label.text = xLabel
     chart.plot.range.axis.label.text = yLabel
     chart

@@ -1,20 +1,19 @@
 import scalariform.formatter.preferences._
 
 name := "think-bayes"
-
 organization := "net.ruippeixotog"
-
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
+crossScalaVersions := Seq("2.11.8", "2.12.0")
 
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.wookietreiber" %% "scala-chart"   % "0.5.0",
+  "com.github.wookietreiber" %% "scala-chart"   % "0.5.1",
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.0",
   "org.apache.commons"        % "commons-math3" % "3.6.1",
-  "org.specs2"               %% "specs2-core"   % "3.8.4"    % "test")
+  "org.specs2"               %% "specs2-core"   % "3.8.6"    % "test")
 
 scalariformPreferences := scalariformPreferences.value
   .setPreference(DanglingCloseParenthesis, Prevent)
@@ -33,9 +32,9 @@ initialCommands in console := """
   import thinkbayes.extensions.Plotting._
   import thinkbayes.extensions.Distributions._"""
 
-publishTo <<= version { v =>
+publishTo := {
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
+  if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
@@ -51,15 +50,16 @@ licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-lic
 
 homepage := Some(url("https://github.com/ruippeixotog/think-bayes-scala"))
 
-pomExtra :=
+pomExtra := {
   <scm>
     <url>https://github.com/ruippeixotog/think-bayes-scala</url>
     <connection>scm:git:https://github.com/ruippeixotog/think-bayes-scala.git</connection>
   </scm>
-    <developers>
-      <developer>
-        <id>ruippeixotog</id>
-        <name>Rui Gonçalves</name>
-        <url>http://ruippeixotog.net</url>
-      </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>ruippeixotog</id>
+      <name>Rui Gonçalves</name>
+      <url>http://ruippeixotog.net</url>
+    </developer>
+  </developers>
+}
