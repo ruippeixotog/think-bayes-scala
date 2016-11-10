@@ -9,7 +9,7 @@ scalaVersion := "2.11.8"
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.wookietreiber" %% "scala-chart"   % "0.5.0",
+  "com.github.wookietreiber" %% "scala-chart"   % "0.5.1",
   "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.0",
   "org.apache.commons"        % "commons-math3" % "3.6.1",
   "org.specs2"               %% "specs2-core"   % "3.8.6"    % "test")
