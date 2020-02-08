@@ -53,9 +53,9 @@ object RedLineApp extends App {
   }
 
   case class ElapsedTimeEstimator(
-      calc: WaitTimeCalculator,
-      lam: Double = 2.0,
-      numPasengers: Int = 15) {
+    calc: WaitTimeCalculator,
+    lam: Double = 2.0,
+    numPasengers: Int = 15) {
 
     def predictWaitTime(xPmf: Pmf[Double]): Pmf[Double] =
       (calc.zbPmf -- xPmf).filterKeys(_ >= 0.0).normalized
