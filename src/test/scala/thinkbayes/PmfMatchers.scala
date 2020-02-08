@@ -11,10 +11,10 @@ trait PmfMatchers { this: SpecificationLike =>
   def beRelativelyCloseTo(expected: Int) = beCloseTo(expected, math.ceil(math.abs(expected) * defaultEpsilon))
 
   def beCloseTo[K](otherPmf: Pmf[K]): Matcher[Pmf[K]] = { pmf: Pmf[K] =>
-    foreach(pmf.iterator) {
+    foreach(pmf) {
       case (k, prob) => prob aka s"The probability for $k" must beRelativelyCloseTo(otherPmf.prob(k))
     }
-    foreach(otherPmf.iterator) {
+    foreach(otherPmf) {
       case (k, prob) => pmf.prob(k) aka s"The probability for $k" must beRelativelyCloseTo(prob)
     }
   }
