@@ -3,6 +3,7 @@ package thinkbayes.extensions.plotting
 import java.awt.{ Stroke, BasicStroke, Color, Font }
 import javax.swing.UIManager
 
+import de.sciss.chart.api._
 import org.jfree.chart.StandardChartTheme
 import org.jfree.chart.block.LineBorder
 import org.jfree.chart.plot.DefaultDrawingSupplier
@@ -10,8 +11,6 @@ import org.jfree.chart.renderer.category.{ BarRenderer, CategoryItemRenderer, St
 import org.jfree.chart.renderer.xy.StandardXYBarPainter
 import org.jfree.chart.title.{ LegendTitle, Title }
 import org.jfree.ui.RectangleInsets
-
-import scalax.chart.api._
 
 class ThinkBayesChartTheme(name: String) extends StandardChartTheme(name, false) {
 

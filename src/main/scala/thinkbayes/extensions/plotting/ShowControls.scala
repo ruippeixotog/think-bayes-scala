@@ -3,8 +3,8 @@ package thinkbayes.extensions.plotting
 import scala.swing.Frame
 import scala.swing.Swing._
 import scala.swing.event.{ WindowClosed, WindowOpened }
-import scalax.chart.Chart
 
+import de.sciss.chart.Chart
 import org.jfree.chart.ChartFrame
 
 /**

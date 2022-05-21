@@ -1,11 +1,21 @@
-.idea
-.idea_modules
-*.iml
+*.sc
+showcases*.csv
 
+# sbt specific
+target/
+.bsp
+
+# IntelliJ specific
+.idea/
+
+# ENSIME specific
 .ensime
 .ensime_cache
 
-target/
-*.sc
+# Metals specific
+.bloop/
+.metals/
+metals.sbt
 
-showcases*.csv
+# vscode specific
+.vscode

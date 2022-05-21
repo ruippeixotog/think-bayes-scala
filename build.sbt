@@ -1,22 +1,17 @@
-import scalariform.formatter.preferences._
-
 name := "think-bayes"
 organization := "net.ruippeixotog"
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.12.10"
-crossScalaVersions := Seq("2.11.12", "2.12.10")
+scalaVersion := "2.12.15"
+crossScalaVersions := Seq("2.12.15")
+
+resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.wookietreiber" %% "scala-chart"   % "0.5.1",
-  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.4",
+  "de.sciss"                 %% "scala-chart"   % "0.8.0",
+  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.6",
   "org.apache.commons"        % "commons-math3" % "3.6.1",
-  "org.specs2"               %% "specs2-core"   % "4.8.3"    % "test")
-
-scalariformPreferences := scalariformPreferences.value
-  .setPreference(DanglingCloseParenthesis, Prevent)
-  .setPreference(DoubleIndentClassDeclaration, true)
-  .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
+  "org.specs2"               %% "specs2-core"   % "4.15.0"    % "test")
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -25,7 +20,7 @@ scalacOptions ++= Seq(
   "-language:implicitConversions",
   "-language:higherKinds")
 
-initialCommands in console := """
+console / initialCommands := """
   import thinkbayes._
   import thinkbayes.extensions.Plotting._
   import thinkbayes.extensions.Distributions._"""
@@ -40,7 +35,7 @@ publishTo := {
 
 publishMavenStyle := true
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 pomIncludeRepository := { _ => false }
 

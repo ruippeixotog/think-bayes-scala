@@ -1,9 +1,9 @@
 package thinkbayes.extensions
 
 import scala.util.Try
-import scalax.chart._
-import scalax.chart.api._
 
+import de.sciss.chart._
+import de.sciss.chart.api._
 import org.jfree.data.category.DefaultCategoryDataset
 import org.jfree.data.xy.XYSeriesCollection
 import thinkbayes._
