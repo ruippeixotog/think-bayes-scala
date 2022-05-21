@@ -1,6 +1,6 @@
 package thinkbayes.extensions.distributions
 
-import org.apache.commons.math3.distribution.{ IntegerDistribution, RealDistribution }
+import org.apache.commons.math3.distribution.{IntegerDistribution, RealDistribution}
 import thinkbayes.extensions.distributions.CommonsMathConversions._
 import thinkbayes._
 
@@ -29,7 +29,8 @@ object CommonsMathConversions {
     else distrib.inverseCumulativeProbability(1.0 - defaultCutoff)
 
   class IntegerDistributionPmf(distrib: IntegerDistribution, cutoff: Double = defaultCutoff)
-      extends Pmf[Int] with ClosedFormPmf[Int] {
+      extends Pmf[Int]
+      with ClosedFormPmf[Int] {
 
     private[this] lazy val lowerBound = approximateIntegerLowerBound(distrib, cutoff)
     private[this] lazy val upperBound = approximateIntegerUpperBound(distrib, cutoff)
@@ -43,7 +44,8 @@ object CommonsMathConversions {
   }
 
   class RealDistributionPmf(distrib: RealDistribution, domain: Seq[Double])
-      extends Pmf[Double] with ClosedFormPmf[Double] {
+      extends Pmf[Double]
+      with ClosedFormPmf[Double] {
 
     def get(key: Double) = Some(distrib.density(key))
     def iterator = domain.iterator.map { key => (key, distrib.density(key)) }

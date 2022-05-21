@@ -17,18 +17,16 @@ object Sampling {
   def randomMax[K: Ordering](pmfs: TraversableOnce[Pmf[K]]): K = randomJoin[K, K](pmfs, _.max)
   def sampleMax[K: Ordering](pmfs: TraversableOnce[Pmf[K]], n: Int) = sampleJoin[K, K](pmfs, n, _.max)
 
-  /**
-    * Adds sampling extensions to `Pmf`
+  /** Adds sampling extensions to `Pmf`
     */
   implicit class PmfSampling[K](val pmf: Pmf[K]) extends AnyVal {
 
-    /**
-      * This implements the alias method as described in
-      * http://www.keithschwarz.com/darts-dice-coins/
+    /** This implements the alias method as described in http://www.keithschwarz.com/darts-dice-coins/
       *
       * It has a total initialization time of O(n) and generation time of O(1).
       *
-      * @return an infinite iterator of samples randomly drawn from the pmf.
+      * @return
+      *   an infinite iterator of samples randomly drawn from the pmf.
       */
     def samplesIterator: Iterator[K] = {
       val len = pmf.size
@@ -38,9 +36,10 @@ object Sampling {
 
       @tailrec
       def alias(
-        small: List[(K, Double)],
-        large: List[(K, Double)],
-        rest: List[(K, Double, Option[K])]): List[(K, Double, Option[K])] = {
+          small: List[(K, Double)],
+          large: List[(K, Double)],
+          rest: List[(K, Double, Option[K])]
+      ): List[(K, Double, Option[K])] = {
         (small, large) match {
           case ((s, ps) :: ss, (l, pl) :: ll) =>
             val remainder = (l, pl - (1.0 - ps))

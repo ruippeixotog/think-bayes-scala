@@ -6,10 +6,11 @@ object Stats {
 
   implicit class PmfStats[K](val pmf: Pmf[K]) extends AnyVal {
 
-    /**
-      * Calculates a quantile of this `Pmf` according to the Nearest Rank definition.
-      * @param p the quantile to calculate
-      * @return the quantile of this `Pmf` according to the Nearest Rank definition.
+    /** Calculates a quantile of this `Pmf` according to the Nearest Rank definition.
+      * @param p
+      *   the quantile to calculate
+      * @return
+      *   the quantile of this `Pmf` according to the Nearest Rank definition.
       */
     def quantile(p: Double)(implicit ord: Ordering[K]): K = {
       val domain = pmf.keysIterator.toIndexedSeq.sorted
@@ -31,10 +32,11 @@ object Stats {
 
   implicit class CdfStats[K](val cdf: Cdf[K]) extends AnyVal {
 
-    /**
-      * Calculates a quantile of this `Cdf` according to the Nearest Rank definition.
-      * @param p the quantile to calculate
-      * @return the quantile of this `Cdf` according to the Nearest Rank definition.
+    /** Calculates a quantile of this `Cdf` according to the Nearest Rank definition.
+      * @param p
+      *   the quantile to calculate
+      * @return
+      *   the quantile of this `Cdf` according to the Nearest Rank definition.
       */
     def quantile(p: Double) = cdf.value(p)
 

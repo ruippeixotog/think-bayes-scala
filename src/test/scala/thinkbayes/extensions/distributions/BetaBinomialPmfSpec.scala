@@ -31,16 +31,16 @@ class BetaBinomialPmfSpec extends Specification with PmfMatchers {
         (31234, 1.4, 1.5) -> 15078.482758214723,
         (31234, 47.5, 92.5) -> 10597.3,
         (312349, 6.2, 52.5) -> 32990.9,
-        (312364973, 10483.2, 24681.3) -> 9.312188385882352e7)
+        (312364973, 10483.2, 24681.3) -> 9.312188385882352e7
+      )
 
       foreach(0 to 100) { n =>
         val pmf = randomBetaBinomialPmf(n)
         pmf.mean must beRelativelyCloseTo(pmf.toCategoricalPmf.mean)
       }
 
-      foreach(table) {
-        case ((n, a, b), res) =>
-          new BetaBinomialPmf(n, a, b).mean must beRelativelyCloseTo(res)
+      foreach(table) { case ((n, a, b), res) =>
+        new BetaBinomialPmf(n, a, b).mean must beRelativelyCloseTo(res)
       }
     }
 
@@ -58,16 +58,16 @@ class BetaBinomialPmfSpec extends Specification with PmfMatchers {
         (31234, 1.4, 1.5) -> 6.2467514339533895e7,
         (31234, 47.5, 92.5) -> 1.5579648550531915e6,
         (312349, 6.2, 52.5) -> 1.5440533738189435e8,
-        (312364973, 10483.2, 24681.3) -> 5.806437517739379e11)
+        (312364973, 10483.2, 24681.3) -> 5.806437517739379e11
+      )
 
       foreach(0 to 100) { n =>
         val pmf = randomBetaBinomialPmf(n)
         pmf.variance must beRelativelyCloseTo(pmf.toCategoricalPmf.variance)
       }
 
-      foreach(table) {
-        case ((n, a, b), res) =>
-          new BetaBinomialPmf(n, a, b).variance must beRelativelyCloseTo(res)
+      foreach(table) { case ((n, a, b), res) =>
+        new BetaBinomialPmf(n, a, b).variance must beRelativelyCloseTo(res)
       }
     }
 
@@ -85,16 +85,16 @@ class BetaBinomialPmfSpec extends Specification with PmfMatchers {
         (31234, 1.4, 1.5) -> 13882,
         (31234, 47.5, 92.5) -> 10524,
         (312349, 6.2, 52.5) -> 28645,
-        (312364973, 10483.2, 24681.3) -> 93118643)
+        (312364973, 10483.2, 24681.3) -> 93118643
+      )
 
       foreach(0 to 100) { n =>
         val pmf = randomBetaBinomialPmf(n)
         pmf.variance must beRelativelyCloseTo(pmf.toCategoricalPmf.variance)
       }
 
-      foreach(table) {
-        case ((n, a, b), res) =>
-          new BetaBinomialPmf(n, a, b).mode.toDouble must beRelativelyCloseTo(res)
+      foreach(table) { case ((n, a, b), res) =>
+        new BetaBinomialPmf(n, a, b).mode.toDouble must beRelativelyCloseTo(res)
       }
     }
   }

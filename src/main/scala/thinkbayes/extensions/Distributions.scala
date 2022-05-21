@@ -27,16 +27,22 @@ object Distributions extends CommonsMathConversions {
 
   def poissonPmf(lam: Double): Pmf[Int] =
     if (lam <= 0) Pmf.empty
-    else new PoissonDistribution(rndGen, lam,
-      PoissonDistribution.DEFAULT_EPSILON, PoissonDistribution.DEFAULT_MAX_ITERATIONS)
+    else
+      new PoissonDistribution(
+        rndGen,
+        lam,
+        PoissonDistribution.DEFAULT_EPSILON,
+        PoissonDistribution.DEFAULT_MAX_ITERATIONS
+      )
 
   def exponentialPdf(lam: Double): Pdf = new ExponentialDistribution(rndGen, 1.0 / lam)
 
   def exponentialPmf(
-    lam: Double,
-    steps: Int = 2000,
-    cutoff: Double = defaultCutoff,
-    absCutoff: Double = Double.PositiveInfinity): Pmf[Double] = {
+      lam: Double,
+      steps: Int = 2000,
+      cutoff: Double = defaultCutoff,
+      absCutoff: Double = Double.PositiveInfinity
+  ): Pmf[Double] = {
 
     val distrib = new ExponentialDistribution(rndGen, 1.0 / lam)
     val high = if (absCutoff.isPosInfinity) approximateRealUpperBound(distrib, cutoff) else absCutoff
@@ -54,11 +60,12 @@ object Distributions extends CommonsMathConversions {
     val distrib = new BetaDistribution(alpha, beta)
 
     if (alpha < 1.0 || beta < 1.0) Pdf(0.0, 1.0)(distrib.density)
-    else Pdf(0.0, 1.0) {
-      case 0.0 => if (alpha == 1.0) beta else 0.0
-      case 1.0 => if (beta == 1.0) alpha else 0.0
-      case x => distrib.density(x)
-    }
+    else
+      Pdf(0.0, 1.0) {
+        case 0.0 => if (alpha == 1.0) beta else 0.0
+        case 1.0 => if (beta == 1.0) alpha else 0.0
+        case x => distrib.density(x)
+      }
   }
 
   def betaBinomialPmf(trials: Int, alpha: Double, beta: Double) = new BetaBinomialPmf(trials, alpha, beta)

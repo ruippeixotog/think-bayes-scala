@@ -8,17 +8,21 @@ crossScalaVersions := Seq("2.12.15")
 resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "de.sciss"                 %% "scala-chart"   % "0.8.0",
-  "nz.ac.waikato.cms.weka"    % "weka-stable"   % "3.8.6",
-  "org.apache.commons"        % "commons-math3" % "3.6.1",
-  "org.specs2"               %% "specs2-core"   % "4.15.0"    % "test")
+  "de.sciss" %% "scala-chart" % "0.8.0",
+  "nz.ac.waikato.cms.weka" % "weka-stable" % "3.8.6",
+  "org.apache.commons" % "commons-math3" % "3.6.1",
+  "org.specs2" %% "specs2-core" % "4.15.0" % "test"
+)
 
 scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
   "-language:implicitConversions",
-  "-language:higherKinds")
+  "-language:higherKinds"
+)
+
+scalafmtOnCompile := true
 
 console / initialCommands := """
   import thinkbayes._
@@ -30,7 +34,7 @@ publishTo := {
   if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
 publishMavenStyle := true

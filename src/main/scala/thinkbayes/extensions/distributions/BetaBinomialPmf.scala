@@ -5,11 +5,13 @@ import org.apache.commons.math3.util.CombinatoricsUtils._
 import org.apache.commons.math3.util.FastMath._
 import thinkbayes.Pmf
 
-/**
-  * A `Pmf` of a beta-binomial distribution ([[http://en.wikipedia.org/wiki/Beta-binomial_distribution]]).
-  * @param trials the number of trials
-  * @param alpha the alpha parameter
-  * @param beta the beta parameter
+/** A `Pmf` of a beta-binomial distribution ([[http://en.wikipedia.org/wiki/Beta-binomial_distribution]]).
+  * @param trials
+  *   the number of trials
+  * @param alpha
+  *   the alpha parameter
+  * @param beta
+  *   the beta parameter
   */
 class BetaBinomialPmf(val trials: Int, val alpha: Double, val beta: Double) extends Pmf[Int] with ClosedFormPmf[Int] {
 
@@ -23,11 +25,11 @@ class BetaBinomialPmf(val trials: Int, val alpha: Double, val beta: Double) exte
 
   override def maxProb = { val m = mode; (m, prob(m)) }
 
-  /**
-    * @inheritdoc
+  /** @inheritdoc
     * In `BetaBinomialPmf`, this method yields a close approximation of the real mode.
     *
-    * @return the mode of this distribution.
+    * @return
+    *   the mode of this distribution.
     */
   override def mode =
     if (alpha > 1.0 && beta > 1.0) round(trials * (alpha - 1.0) / (alpha + beta - 2.0)).toInt
