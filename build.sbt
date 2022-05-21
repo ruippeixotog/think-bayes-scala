@@ -5,8 +5,6 @@ version := "1.0-SNAPSHOT"
 scalaVersion := "2.12.15"
 crossScalaVersions := Seq("2.12.15")
 
-resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
-
 libraryDependencies ++= Seq(
   "de.sciss" %% "scala-chart" % "0.8.0",
   "nz.ac.waikato.cms.weka" % "weka-stable" % "3.8.6",
