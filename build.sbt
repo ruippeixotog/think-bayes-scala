@@ -44,19 +44,14 @@ Test / publishArtifact := false
 pomIncludeRepository := { _ => false }
 
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
-
 homepage := Some(url("https://github.com/ruippeixotog/think-bayes-scala"))
-
-pomExtra := {
-  <scm>
-    <url>https://github.com/ruippeixotog/think-bayes-scala</url>
-    <connection>scm:git:https://github.com/ruippeixotog/think-bayes-scala.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>ruippeixotog</id>
-      <name>Rui Gonçalves</name>
-      <url>http://ruippeixotog.net</url>
-    </developer>
-  </developers>
-}
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/ruippeixotog/think-bayes-scala"),
+    "scm:git:https://github.com/ruippeixotog/think-bayes-scala.git",
+    "scm:git:git@github.com:ruippeixotog/think-bayes-scala.git"
+  )
+)
+developers := List(
+  Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("https://www.ruippeixotog.net"))
+)
