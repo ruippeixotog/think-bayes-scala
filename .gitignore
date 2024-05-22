@@ -1,9 +1,24 @@
 *.sc
 showcases*.csv
 
+*.class
+*.log
+
 # sbt specific
-target/
 .bsp
+.cache
+.history
+.lib/
+dist/*
+lib_managed/
+project/boot/
+project/plugins/project/
+src_managed/
+target/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
 
 # IntelliJ specific
 .idea/

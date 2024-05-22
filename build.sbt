@@ -2,8 +2,8 @@ name := "think-bayes"
 organization := "net.ruippeixotog"
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.12.15"
-crossScalaVersions := Seq("2.12.15")
+scalaVersion := "2.12.19"
+crossScalaVersions := Seq("2.12.19")
 
 libraryDependencies ++= Seq(
   "de.sciss" %% "scala-chart" % "0.8.0",
